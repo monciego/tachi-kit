@@ -1,4 +1,4 @@
-import { Form, Head } from "@inertiajs/react";
+import { Form, Head, usePage } from "@inertiajs/react";
 import InputError from "@/components/input-error";
 import PasswordInput from "@/components/password-input";
 import TextLink from "@/components/text-link";
@@ -18,6 +18,8 @@ type Props = {
 };
 
 export default function Login({ status, canResetPassword }: Props) {
+    const { canRegister } = usePage().props;
+
     return (
         <>
             <Head title="Log in" />
@@ -95,12 +97,14 @@ export default function Login({ status, canResetPassword }: Props) {
 
             <PasskeyVerify />
 
-            <div className="text-muted-foreground text-center text-sm mt-4">
-                Don't have an account?{" "}
-                <TextLink href={register()} tabIndex={5}>
-                    Sign up
-                </TextLink>
-            </div>
+            {canRegister && (
+                <div className="text-muted-foreground text-center text-sm mt-4">
+                    Don't have an account?{" "}
+                    <TextLink href={register()} tabIndex={5}>
+                        Sign up
+                    </TextLink>
+                </div>
+            )}
 
             {status && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
