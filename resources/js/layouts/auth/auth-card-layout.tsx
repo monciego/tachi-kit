@@ -1,14 +1,14 @@
-import { Link } from '@inertiajs/react';
-import type { PropsWithChildren } from 'react';
-import AppLogoIcon from '@/components/app-logo-icon';
+import { Link } from "@inertiajs/react";
+import type { PropsWithChildren } from "react";
+import AppLogoIcon from "@/components/app-logo-icon";
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { home } from '@/routes';
+} from "@/components/ui/card";
+import { home } from "@/routes";
 
 export default function AuthCardLayout({
     children,
@@ -37,7 +37,7 @@ export default function AuthCardLayout({
                             <CardTitle className="text-xl">{title}</CardTitle>
                             <CardDescription>{description}</CardDescription>
                         </CardHeader>
-                        <CardContent className="px-10 py-8">
+                        <CardContent className="px-10 pb-8 pt-2">
                             {children}
                         </CardContent>
                     </Card>

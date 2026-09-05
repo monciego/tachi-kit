@@ -1,16 +1,16 @@
-import { Form, Head } from '@inertiajs/react';
-import InputError from '@/components/input-error';
-import PasswordInput from '@/components/password-input';
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
-import { register } from '@/routes';
-import { store } from '@/routes/login';
-import { request } from '@/routes/password';
-import PasskeyVerify from '@/components/passkey-verify';
+import { Form, Head } from "@inertiajs/react";
+import InputError from "@/components/input-error";
+import PasswordInput from "@/components/password-input";
+import TextLink from "@/components/text-link";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
+import { store } from "@/routes/login";
+import { request } from "@/routes/password";
+import { register } from "@/routes";
+import PasskeyVerify from "@/components/passkey-verify";
 
 type Props = {
     status?: string;
@@ -22,11 +22,9 @@ export default function Login({ status, canResetPassword }: Props) {
         <>
             <Head title="Log in" />
 
-            <PasskeyVerify />
-
             <Form
                 {...store.form()}
-                resetOnSuccess={['password']}
+                resetOnSuccess={["password"]}
                 className="flex flex-col gap-6"
             >
                 {({ processing, errors }) => (
@@ -42,7 +40,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                     autoFocus
                                     tabIndex={1}
                                     autoComplete="email"
-                                    placeholder="email@example.com"
+                                    placeholder="email@tachikit.com"
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -82,7 +80,7 @@ export default function Login({ status, canResetPassword }: Props) {
 
                             <Button
                                 type="submit"
-                                className="mt-4 w-full"
+                                className="w-full"
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"
@@ -91,16 +89,18 @@ export default function Login({ status, canResetPassword }: Props) {
                                 Log in
                             </Button>
                         </div>
-
-                        <div className="text-muted-foreground text-center text-sm">
-                            Don't have an account?{' '}
-                            <TextLink href={register()} tabIndex={5}>
-                                Sign up
-                            </TextLink>
-                        </div>
                     </>
                 )}
             </Form>
+
+            <PasskeyVerify />
+
+            <div className="text-muted-foreground text-center text-sm mt-4">
+                Don't have an account?{" "}
+                <TextLink href={register()} tabIndex={5}>
+                    Sign up
+                </TextLink>
+            </div>
 
             {status && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
@@ -112,6 +112,6 @@ export default function Login({ status, canResetPassword }: Props) {
 }
 
 Login.layout = {
-    title: 'Log in to your account',
-    description: 'Enter your email and password below to log in',
+    title: "Log in to your account",
+    description: "Enter your email and password below to log in",
 };
