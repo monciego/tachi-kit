@@ -1,5 +1,8 @@
 {
-    "agents": ["opencode", "zed"],
+    "agents": [
+        "opencode",
+        "zed"
+    ],
     "cloud": false,
     "guidelines": true,
     "mcp": true,
