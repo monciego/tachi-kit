@@ -267,3 +267,78 @@ test('bulk delete rejects ids that do not exist', function () {
         ->post(route('users.bulk-delete'), ['ids' => [99999]])
         ->assertSessionHasErrors('ids.0');
 });
+
+test('includes the active status in the users listing', function () {
+    $inactive = User::factory()->asUser()->inactive()->create(['email' => 'inactive@example.com']);
+
+    $this->get(route('users.index'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('users.data.0.id', $this->admin->id)
+            ->where('users.data.0.is_active', true)
+            ->where('users.total', 2)
+            ->where('users.data.1.email', $inactive->email)
+            ->where('users.data.1.is_active', false)
+        );
+});
+
+test('filters users by status', function () {
+    User::factory()->asUser()->count(3)->create();
+    User::factory()->asUser()->inactive()->create(['email' => 'inactive@example.com']);
+
+    $this->get('/users?status=inactive')
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('users.total', 1)
+            ->where('users.data.0.email', 'inactive@example.com')
+            ->where('users.data.0.is_active', false)
+        );
+});
+
+test('deactivates a user', function () {
+    $target = User::factory()->asUser()->create(['email' => 'target@example.com']);
+
+    $this->from(route('users.index'))
+        ->patch(route('users.update-status', $target), ['is_active' => false])
+        ->assertRedirect(route('users.index'));
+
+    $this->assertDatabaseHas('users', ['id' => $target->id, 'is_active' => false]);
+});
+
+test('activates a user', function () {
+    $target = User::factory()->asUser()->inactive()->create(['email' => 'target@example.com']);
+
+    $this->from(route('users.index'))
+        ->patch(route('users.update-status', $target), ['is_active' => true])
+        ->assertRedirect(route('users.index'));
+
+    $this->assertDatabaseHas('users', ['id' => $target->id, 'is_active' => true]);
+});
+
+test('forbids changing your own account status', function () {
+    $this->from(route('users.index'))
+        ->patch(route('users.update-status', $this->admin), ['is_active' => false])
+        ->assertForbidden();
+
+    $this->assertDatabaseHas('users', ['id' => $this->admin->id, 'is_active' => true]);
+});
+
+test('forbids deactivating a superadmin', function () {
+    $superAdmin = User::factory()->asSuperadmin()->create();
+
+    $this->from(route('users.index'))
+        ->patch(route('users.update-status', $superAdmin), ['is_active' => false])
+        ->assertForbidden();
+
+    $this->assertDatabaseHas('users', ['id' => $superAdmin->id, 'is_active' => true]);
+});
+
+test('status update requires a boolean value', function () {
+    $target = User::factory()->asUser()->create();
+
+    $this->from(route('users.index'))
+        ->patch(route('users.update-status', $target), ['is_active' => 'maybe'])
+        ->assertSessionHasErrors('is_active');
+
+    $this->assertDatabaseHas('users', ['id' => $target->id, 'is_active' => true]);
+});

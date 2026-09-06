@@ -14,7 +14,7 @@ export default function Index({ users: paginator, roleOptions }: IndexProps) {
     return (
         <>
             <Head title="Users" />
-            <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="mb-4 flex items-center justify-between gap-2">
                 <div className="flex flex-col gap-1">
                     <h2 className="text-2xl font-semibold tracking-tight">
                         Users
@@ -56,6 +56,15 @@ export default function Index({ users: paginator, roleOptions }: IndexProps) {
                                 label: role,
                                 value: role,
                             })),
+                        },
+                        {
+                            column: "is_active",
+                            param: "status",
+                            title: "Status",
+                            options: [
+                                { label: "Active", value: "active" },
+                                { label: "Inactive", value: "inactive" },
+                            ],
                         },
                     ],
                 }}

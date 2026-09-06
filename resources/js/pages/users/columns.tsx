@@ -1,8 +1,9 @@
 import * as React from "react";
 import { Link, router, usePage } from "@inertiajs/react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, UserCheck, UserX } from "lucide-react";
 import { useInitials } from "@/hooks/use-initials";
+import { cn } from "cn";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,7 @@ export interface User {
     avatar?: string;
     roles: string[];
     created_at: string;
+    is_active: boolean;
     deletable: boolean;
 }
 
@@ -45,7 +47,7 @@ function UserNameCell({ user }: { user: User }) {
     const getInitials = useInitials();
 
     return (
-        <div className="flex max-w-[220px] items-center gap-2">
+        <div className="flex max-w-55 items-center gap-2">
             <Avatar className="h-8 w-8">
                 <AvatarImage
                     className="object-cover"
@@ -69,13 +71,29 @@ function UserNameCell({ user }: { user: User }) {
     );
 }
 
+function StatusBadge({ active }: { active: boolean }) {
+    return (
+        <Badge
+            variant="outline"
+            className={cn(
+                "shrink-0 rounded-full border-transparent font-normal",
+                active
+                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                    : "bg-slate-100 text-slate-500 dark:bg-slate-900 dark:text-slate-400",
+            )}
+        >
+            {active ? "Active" : "Inactive"}
+        </Badge>
+    );
+}
+
 export const columns = columnHelper.columns([
     columnHelper.accessor("id", {
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="ID" />
         ),
         cell: ({ row }) => (
-            <div className="text-muted-foreground w-[80px] font-mono text-sm">
+            <div className="text-muted-foreground w-20 font-mono text-sm">
                 {row.getValue("id")}
             </div>
         ),
@@ -92,7 +110,7 @@ export const columns = columnHelper.columns([
             <DataTableColumnHeader column={column} title="Email" />
         ),
         cell: ({ row }) => (
-            <div className="text-muted-foreground max-w-[260px] truncate">
+            <div className="text-muted-foreground max-w-65 truncate">
                 {row.getValue("email")}
             </div>
         ),
@@ -147,6 +165,13 @@ export const columns = columnHelper.columns([
             );
         },
     }),
+    columnHelper.accessor("is_active", {
+        header: "Status",
+        enableSorting: false,
+        cell: ({ row }) => (
+            <StatusBadge active={row.getValue<boolean>("is_active")} />
+        ),
+    }),
     columnHelper.display({
         id: "actions",
         cell: ({ row }) => <UserRowActions user={row.original} />,
@@ -154,15 +179,28 @@ export const columns = columnHelper.columns([
 ]);
 
 function UserRowActions({ user }: { user: User }) {
+    const { auth } = usePage().props;
     const [open, setOpen] = React.useState(false);
     const [pending, setPending] = React.useState(false);
+
+    const canChangeStatus =
+        user.id !== auth.user.id && !user.roles.includes("superadmin");
 
     const handleDelete = () => {
         setPending(true);
         router.delete(users.destroy(user.id).url, {
             preserveScroll: true,
+            onSuccess: () => setOpen(false),
             onFinish: () => setPending(false),
         });
+    };
+
+    const handleStatusChange = (isActive: boolean) => {
+        router.patch(
+            users.updateStatus(user.id).url,
+            { is_active: isActive },
+            { preserveScroll: true },
+        );
     };
 
     return (
@@ -178,13 +216,26 @@ function UserRowActions({ user }: { user: User }) {
                         <span className="sr-only">Open menu</span>
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[160px]">
+                <DropdownMenuContent align="end" className="w-40">
                     <DropdownMenuItem asChild>
                         <Link href={users.edit(user.id).url}>
                             <Pencil />
                             Edit
                         </Link>
                     </DropdownMenuItem>
+                    {canChangeStatus && (
+                        <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                                onClick={() =>
+                                    handleStatusChange(!user.is_active)
+                                }
+                            >
+                                {user.is_active ? <UserX /> : <UserCheck />}
+                                {user.is_active ? "Deactivate" : "Activate"}
+                            </DropdownMenuItem>
+                        </>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                         variant="destructive"
