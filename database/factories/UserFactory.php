@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -34,6 +35,40 @@ class UserFactory extends Factory
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
         ];
+    }
+
+    /**
+     * Indicate that the user should be assigned the given role.
+     */
+    public function withRole(string $role): static
+    {
+        return $this->afterCreating(function (User $user) use ($role) {
+            $user->assignRole(Role::firstOrCreate(['name' => $role]));
+        });
+    }
+
+    /**
+     * Indicate that the user should be assigned the admin role.
+     */
+    public function asAdmin(): static
+    {
+        return $this->withRole('admin');
+    }
+
+    /**
+     * Indicate that the user should be assigned the superadmin role.
+     */
+    public function asSuperadmin(): static
+    {
+        return $this->withRole('superadmin');
+    }
+
+    /**
+     * Indicate that the user should be assigned the standard user role.
+     */
+    public function asUser(): static
+    {
+        return $this->withRole('user');
     }
 
     /**

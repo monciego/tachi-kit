@@ -1,5 +1,5 @@
-import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';
-import type { BreadcrumbItem } from '@/types';
+import AppLayoutTemplate from "@/layouts/app/app-sidebar-layout";
+import type { BreadcrumbItem } from "@/types";
 
 export default function AppLayout({
     breadcrumbs = [],
@@ -10,7 +10,7 @@ export default function AppLayout({
 }) {
     return (
         <AppLayoutTemplate breadcrumbs={breadcrumbs}>
-            {children}
+            <main className="p-4 sm:p-5">{children}</main>
         </AppLayoutTemplate>
     );
 }
