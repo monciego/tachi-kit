@@ -1,10 +1,10 @@
-import * as React from "react";
-import { type Column, type RowData } from "@tanstack/react-table";
-import { cn } from "cn";
-import { Check, PlusCircle } from "lucide-react";
+import * as React from 'react';
+import { type Column, type RowData } from '@tanstack/react-table';
+import { cn } from 'cn';
+import { Check, PlusCircle } from 'lucide-react';
 
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
 import {
     Command,
     CommandEmpty,
@@ -13,20 +13,17 @@ import {
     CommandItem,
     CommandList,
     CommandSeparator,
-} from "./ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Separator } from "./ui/separator";
+} from './ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Separator } from './ui/separator';
 
-import { type TasksTableFeatures } from "./data-table-features";
+import { type DataTableFeatures } from './data-table-features';
+import { type DataTableFilterOption } from '../types/table';
 
 interface DataTableFacetedFilterProps<TData extends RowData, TValue> {
-    column?: Column<TasksTableFeatures, TData, TValue>;
+    column?: Column<DataTableFeatures, TData, TValue>;
     title?: string;
-    options: {
-        label: string;
-        value: string;
-        icon?: React.ComponentType<{ className?: string }>;
-    }[];
+    options: DataTableFilterOption[];
 }
 
 export function DataTableFacetedFilter<TData extends RowData, TValue>({
@@ -34,7 +31,6 @@ export function DataTableFacetedFilter<TData extends RowData, TValue>({
     title,
     options,
 }: DataTableFacetedFilterProps<TData, TValue>) {
-    const facets = column?.getFacetedUniqueValues();
     const selectedValues = new Set(column?.getFilterValue() as string[]);
 
     return (
@@ -121,23 +117,18 @@ export function DataTableFacetedFilter<TData extends RowData, TValue>({
                                     >
                                         <div
                                             className={cn(
-                                                "flex size-4 items-center justify-center rounded-[4px] border",
+                                                'flex size-4 items-center justify-center rounded-[4px] border',
                                                 isSelected
-                                                    ? "border-primary bg-primary text-primary-foreground"
-                                                    : "border-input [&_svg]:invisible",
+                                                    ? 'border-primary bg-primary text-primary-foreground'
+                                                    : 'border-input [&_svg]:invisible',
                                             )}
                                         >
-                                            <Check className="size-3.5 text-primary-foreground" />
+                                            <Check className="text-primary-foreground size-3.5" />
                                         </div>
                                         {option.icon && (
-                                            <option.icon className="size-4 text-muted-foreground" />
+                                            <option.icon className="text-muted-foreground size-4" />
                                         )}
                                         <span>{option.label}</span>
-                                        {facets?.get(option.value) && (
-                                            <span className="ml-auto flex size-4 items-center justify-center font-mono text-xs text-muted-foreground">
-                                                {facets.get(option.value)}
-                                            </span>
-                                        )}
                                     </CommandItem>
                                 );
                             })}

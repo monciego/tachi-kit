@@ -1,7 +1,7 @@
-import { type ReactTable, type RowData } from "@tanstack/react-table";
-import { Settings2 } from "lucide-react";
+import { type ReactTable, type RowData } from '@tanstack/react-table';
+import { Settings2 } from 'lucide-react';
 
-import { Button } from "./ui/button";
+import { Button } from './ui/button';
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -9,14 +9,14 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from './ui/dropdown-menu';
 
-import { type TasksTableFeatures } from "./data-table-features";
+import { type DataTableFeatures } from './data-table-features';
 
 export function DataTableViewOptions<TData extends RowData>({
     table,
 }: {
-    table: ReactTable<TasksTableFeatures, TData>;
+    table: ReactTable<DataTableFeatures, TData>;
 }) {
     return (
         <DropdownMenu>
@@ -37,7 +37,7 @@ export function DataTableViewOptions<TData extends RowData>({
                     .getAllColumns()
                     .filter(
                         (column) =>
-                            typeof column.accessorFn !== "undefined" &&
+                            typeof column.accessorFn !== 'undefined' &&
                             column.getCanHide(),
                     )
                     .map((column) => {

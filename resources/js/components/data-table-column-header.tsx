@@ -1,23 +1,23 @@
-import { type Column, type RowData } from "@tanstack/react-table";
-import { cn } from "cn";
-import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff } from "lucide-react";
+import { type Column, type RowData } from '@tanstack/react-table';
+import { cn } from 'cn';
+import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff } from 'lucide-react';
 
-import { Button } from "./ui/button";
+import { Button } from './ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from './ui/dropdown-menu';
 
-import { type TasksTableFeatures } from "./data-table-features";
+import { type DataTableFeatures } from './data-table-features';
 
 interface DataTableColumnHeaderProps<
     TData extends RowData,
     TValue,
 > extends React.HTMLAttributes<HTMLDivElement> {
-    column: Column<TasksTableFeatures, TData, TValue>;
+    column: Column<DataTableFeatures, TData, TValue>;
     title: string;
 }
 
@@ -31,18 +31,18 @@ export function DataTableColumnHeader<TData extends RowData, TValue>({
     }
 
     return (
-        <div className={cn("flex items-center gap-2", className)}>
+        <div className={cn('flex items-center gap-2', className)}>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="-ml-3 h-8 data-[state=open]:bg-accent"
+                        className="data-[state=open]:bg-accent -ml-3 h-8"
                     >
                         <span>{title}</span>
-                        {column.getIsSorted() === "desc" ? (
+                        {column.getIsSorted() === 'desc' ? (
                             <ArrowDown />
-                        ) : column.getIsSorted() === "asc" ? (
+                        ) : column.getIsSorted() === 'asc' ? (
                             <ArrowUp />
                         ) : (
                             <ChevronsUpDown />

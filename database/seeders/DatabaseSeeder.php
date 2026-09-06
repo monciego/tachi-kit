@@ -28,6 +28,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'superadmin@tachikit.com',
         ]);
 
+        User::factory()->asSuperadmin()->create([
+            'name' => 'Superadmin II',
+            'email' => 'superadmin2@tachikit.com',
+        ]);
+
         User::factory()->asAdmin()->create([
             'name' => 'Administrator',
             'email' => 'administrator@tachikit.com',
