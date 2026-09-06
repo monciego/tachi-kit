@@ -1,16 +1,23 @@
-import { Head, router } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 
 import { DataTable } from "@/components/data-table";
 import { columns, type User } from "./columns";
 import users from "@/routes/users";
 import { type Paginator } from "@/types/table";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 interface IndexProps {
     users: Paginator<User>;
     roleOptions: string[];
+    canCreateUsers: boolean;
 }
 
-export default function Index({ users: paginator, roleOptions }: IndexProps) {
+export default function Index({
+    users: paginator,
+    roleOptions,
+    canCreateUsers,
+}: IndexProps) {
     return (
         <>
             <Head title="Users" />
@@ -23,6 +30,15 @@ export default function Index({ users: paginator, roleOptions }: IndexProps) {
                         Manage system users and their roles
                     </p>
                 </div>
+
+                {canCreateUsers && (
+                    <Link href={users.create().url}>
+                        <Button>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add User
+                        </Button>
+                    </Link>
+                )}
             </div>
             <DataTable
                 columns={columns}

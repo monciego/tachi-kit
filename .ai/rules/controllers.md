@@ -18,3 +18,6 @@ Users have an `is_active` flag. `updateStatus` (PATCH /users/{user}/status) acce
 
 ## Role filter excludes superadmin for non-superadmins
 `roleOptions` (the Role faceted filter) excludes 'superadmin' for everyone except superadmins, mirroring the row-hiding rule — non-superadmins only ever see admin + user in the filter.
+
+## create/store user flow + role assignment rules
+Creating users is gated to superadmin/admin (StoreUserRequest::authorize + UserController::create abort 403). store() creates the user (plaintext password — the model's `hashed` cast encrypts it) then `assignRole($validated roles)`; use `Inertia::flash('toast', ...)` + redirect to users.index. `availableRoleNames()` feeds both `roleOptions` (index filter) and `roles` (create page) and excludes superadmin for non-superadmins; the request's `roles.*` closure rejects superadmin assignment by non-superadmins as a validation error.

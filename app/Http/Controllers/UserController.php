@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -93,12 +94,45 @@ class UserController extends Controller
 
         return Inertia::render('users/index', [
             'users' => $users,
-            'roleOptions' => Role::query()
-                ->when(! $request->user()->hasRole('superadmin'), fn ($query) => $query->where('name', '!=', 'superadmin'))
-                ->orderBy('name')
-                ->pluck('name')
-                ->all(),
+            'roleOptions' => $this->availableRoleNames(),
+            'canCreateUsers' => $request->user()->hasAnyRole(['superadmin', 'admin']),
         ]);
+    }
+
+    /**
+     * Show the create user form.
+     */
+    public function create(Request $request): Response
+    {
+        // to be removed if permission is applied
+        abort_unless($request->user()->hasAnyRole(['superadmin', 'admin']), 403);
+
+        return Inertia::render('users/create', [
+            'roles' => $this->availableRoleNames(),
+        ]);
+    }
+
+    /**
+     * Create a new user.
+     */
+    public function store(StoreUserRequest $request): RedirectResponse
+    {
+        $data = $request->validated();
+
+        $user = User::query()->create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => $data['password'],
+        ]);
+
+        $user->assignRole($data['roles']);
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => __('User :name created.', ['name' => $user->name]),
+        ]);
+
+        return to_route('users.index');
     }
 
     /**
@@ -165,5 +199,22 @@ class UserController extends Controller
         ]);
 
         return back();
+    }
+
+    /**
+     * Roles the current user may see and assign. Superadmins see every role;
+     * everyone else can never see or assign the superadmin role. System roles
+     * are listed first (superadmin, admin, user), then custom roles alphabetically.
+     *
+     * @return string[]
+     */
+    private function availableRoleNames(): array
+    {
+        return Role::query()
+            ->when(! auth()->user()?->hasRole('superadmin'), fn ($query) => $query->where('name', '!=', 'superadmin'))
+            ->orderByRaw("CASE WHEN name = 'superadmin' THEN 0 WHEN name = 'admin' THEN 1 WHEN name = 'user' THEN 2 ELSE 3 END")
+            ->orderBy('name')
+            ->pluck('name')
+            ->all();
     }
 }

@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
@@ -193,7 +194,7 @@ test('shows every role in the filter for superadmins', function () {
         ->get(route('users.index'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->where('roleOptions', ['admin', 'superadmin', 'user'])
+            ->where('roleOptions', ['superadmin', 'admin', 'user'])
         );
 });
 
@@ -363,4 +364,120 @@ test('status update requires a boolean value', function () {
         ->assertSessionHasErrors('is_active');
 
     $this->assertDatabaseHas('users', ['id' => $target->id, 'is_active' => true]);
+});
+
+test('renders the create user page with available roles', function () {
+    User::factory()->asUser()->create();
+
+    $this->get(route('users.create'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('users/create')
+            ->where('roles', ['admin', 'user'])
+        );
+});
+
+test('superadmins see every role on the create user page', function () {
+    $actor = User::factory()->asSuperadmin()->create(['email' => 'actor@example.com']);
+    User::factory()->asUser()->create();
+
+    $this->actingAs($actor)
+        ->get(route('users.create'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('roles', ['superadmin', 'admin', 'user'])
+        );
+});
+
+test('ordinary users cannot open the create user page', function () {
+    $user = User::factory()->asUser()->create();
+
+    $this->actingAs($user)
+        ->get(route('users.create'))
+        ->assertForbidden();
+});
+
+test('creates a user with the given roles', function () {
+    User::factory()->asUser()->create();
+
+    $this->from(route('users.index'))
+        ->post(route('users.store'), [
+            'name' => 'New Person',
+            'email' => 'new@example.com',
+            'password' => 'secret-password',
+            'password_confirmation' => 'secret-password',
+            'roles' => ['admin', 'user'],
+        ])
+        ->assertRedirect(route('users.index'));
+
+    $this->assertDatabaseHas('users', ['email' => 'new@example.com']);
+
+    $created = User::query()->where('email', 'new@example.com')->firstOrFail();
+
+    expect($created->roles->pluck('name')->sort()->values()->all())->toBe(['admin', 'user']);
+    expect(Hash::check('secret-password', $created->password))->toBeTrue();
+});
+
+test('admins cannot assign the superadmin role', function () {
+    $this->from(route('users.index'))
+        ->post(route('users.store'), [
+            'name' => 'New Person',
+            'email' => 'new@example.com',
+            'password' => 'secret-password',
+            'password_confirmation' => 'secret-password',
+            'roles' => ['superadmin'],
+        ])
+        ->assertSessionHasErrors('roles.0');
+
+    $this->assertDatabaseMissing('users', ['email' => 'new@example.com']);
+});
+
+test('requires at least one role when creating a user', function () {
+    $this->from(route('users.index'))
+        ->post(route('users.store'), [
+            'name' => 'New Person',
+            'email' => 'new@example.com',
+            'password' => 'secret-password',
+            'password_confirmation' => 'secret-password',
+        ])
+        ->assertSessionHasErrors('roles');
+
+    $this->assertDatabaseMissing('users', ['email' => 'new@example.com']);
+});
+
+test('ordinary users cannot create users', function () {
+    $user = User::factory()->asUser()->create();
+
+    $this->actingAs($user)
+        ->from(route('users.index'))
+        ->post(route('users.store'), [
+            'name' => 'New Person',
+            'email' => 'new@example.com',
+            'password' => 'secret-password',
+            'password_confirmation' => 'secret-password',
+            'roles' => ['user'],
+        ])
+        ->assertForbidden();
+
+    $this->assertDatabaseMissing('users', ['email' => 'new@example.com']);
+});
+
+test('superadmins can create superadmins', function () {
+    $actor = User::factory()->asSuperadmin()->create(['email' => 'actor@example.com']);
+
+    $this->actingAs($actor)
+        ->from(route('users.index'))
+        ->post(route('users.store'), [
+            'name' => 'New Boss',
+            'email' => 'boss@example.com',
+            'password' => 'secret-password',
+            'password_confirmation' => 'secret-password',
+            'roles' => ['superadmin'],
+        ])
+        ->assertRedirect(route('users.index'));
+
+    $created = User::query()->where('email', 'boss@example.com')->firstOrFail();
+
+    expect($created->hasRole('superadmin'))->toBeTrue();
+    expect($created->is_active)->toBeTrue();
 });
