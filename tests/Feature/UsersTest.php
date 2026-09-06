@@ -175,6 +175,28 @@ test('hides superadmins from other users', function () {
         );
 });
 
+test('hides the superadmin role from the role filter for other users', function () {
+    User::factory()->asUser()->create();
+
+    $this->get(route('users.index'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('roleOptions', ['admin', 'user'])
+        );
+});
+
+test('shows every role in the filter for superadmins', function () {
+    $actor = User::factory()->asSuperadmin()->create(['email' => 'actor@example.com']);
+    User::factory()->asUser()->create();
+
+    $this->actingAs($actor)
+        ->get(route('users.index'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('roleOptions', ['admin', 'superadmin', 'user'])
+        );
+});
+
 test('marks superadmins as not deletable for superadmins', function () {
     $actor = User::factory()->asSuperadmin()->create([
         'email' => 'actor@example.com',

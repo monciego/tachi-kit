@@ -15,3 +15,6 @@ Superadmins are invisible to everyone except superadmins (index applies `whereDo
 
 ## User is_active status + updateStatus guards
 Users have an `is_active` flag. `updateStatus` (PATCH /users/{user}/status) accepts a required boolean `is_active`; it 403s when the target is the acting user (self-status change) and when deactivating a superadmin. `index` exposes `is_active` per row and accepts a comma `status` filter (active/inactive) applied only when exactly one of the two is selected (XOR).
+
+## Role filter excludes superadmin for non-superadmins
+`roleOptions` (the Role faceted filter) excludes 'superadmin' for everyone except superadmins, mirroring the row-hiding rule — non-superadmins only ever see admin + user in the filter.

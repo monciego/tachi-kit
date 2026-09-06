@@ -93,7 +93,11 @@ class UserController extends Controller
 
         return Inertia::render('users/index', [
             'users' => $users,
-            'roleOptions' => Role::query()->orderBy('name')->pluck('name')->all(),
+            'roleOptions' => Role::query()
+                ->when(! $request->user()->hasRole('superadmin'), fn ($query) => $query->where('name', '!=', 'superadmin'))
+                ->orderBy('name')
+                ->pluck('name')
+                ->all(),
         ]);
     }
 
