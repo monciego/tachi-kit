@@ -2,14 +2,14 @@
 
 namespace App\Http\Requests;
 
-use App\Concerns\PasswordValidationRules;
+use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
-class StoreUserRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
-    use PasswordValidationRules;
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -27,8 +27,8 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => $this->passwordRules(),
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique(User::class)->ignore($this->route('user'))],
+            'password' => ['nullable', 'string', Password::default(), 'confirmed'],
             'roles' => ['required', 'array', 'min:1'],
             'roles.*' => [
                 'required',
@@ -50,7 +50,6 @@ class StoreUserRequest extends FormRequest
             'name.required' => 'The name field is required.',
             'email.required' => 'The email field is required.',
             'email.unique' => 'This email is already registered.',
-            'password.required' => 'The password field is required.',
             'password.confirmed' => 'The password confirmation does not match.',
             'roles.required' => 'Please select at least one role.',
             'roles.min' => 'Please select at least one role.',

@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -136,6 +138,72 @@ class UserController extends Controller
     }
 
     /**
+     * Show the edit user form.
+     */
+    public function edit(Request $request, User $user): Response
+    {
+        abort_unless($request->user()->hasAnyRole(['superadmin', 'admin']), 403);
+
+        abort_if(
+            ! $request->user()->hasRole('superadmin') && $user->hasRole('superadmin'),
+            403,
+            __('Superadmin accounts cannot be edited.'),
+        );
+
+        return Inertia::render('users/edit', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->getRoleNames()->sort()->values()->all(),
+                'is_superadmin' => $user->hasRole('superadmin'),
+            ],
+            'roles' => $this->availableRoleNames(),
+        ]);
+    }
+
+    /**
+     * Update a user.
+     */
+    public function update(UpdateUserRequest $request, User $user): RedirectResponse
+    {
+        abort_if(
+            ! $request->user()->hasRole('superadmin') && $user->hasRole('superadmin'),
+            403,
+            __('Superadmin accounts cannot be edited.'),
+        );
+
+        $data = $request->validated();
+
+        abort_if(
+            $user->id === $request->user()->id
+                && $user->hasRole('superadmin')
+                && ! in_array('superadmin', $data['roles']),
+            403,
+            __('You cannot remove your own superadmin role.'),
+        );
+
+        $attributes = [
+            'name' => $data['name'],
+            'email' => $data['email'],
+        ];
+
+        if (! empty($data['password'])) {
+            $attributes['password'] = $data['password'];
+        }
+
+        $user->update($attributes);
+        $user->syncRoles($data['roles']);
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => __('User :name updated.', ['name' => $user->name]),
+        ]);
+
+        return to_route('users.index');
+    }
+
+    /**
      * Delete the given user.
      */
     public function destroy(Request $request, User $user): RedirectResponse
@@ -210,8 +278,11 @@ class UserController extends Controller
      */
     private function availableRoleNames(): array
     {
+        /** @var User|null $user */
+        $user = Auth::user();
+
         return Role::query()
-            ->when(! auth()->user()?->hasRole('superadmin'), fn ($query) => $query->where('name', '!=', 'superadmin'))
+            ->when(! $user?->hasRole('superadmin'), fn ($query) => $query->where('name', '!=', 'superadmin'))
             ->orderByRaw("CASE WHEN name = 'superadmin' THEN 0 WHEN name = 'admin' THEN 1 WHEN name = 'user' THEN 2 ELSE 3 END")
             ->orderBy('name')
             ->pluck('name')

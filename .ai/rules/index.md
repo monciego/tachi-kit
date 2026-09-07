@@ -9,3 +9,5 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Actions/Fortify/** | .ai/rules/fortify.md |
 | ** | .ai/rules/general.md |
 | app/Providers/FortifyServiceProvider.php | .ai/rules/providers.md |
+| app/Http/Requests/UpdateUserRequest.php | .ai/rules/requests.md |
+| resources/js/pages/users/*.tsx | .ai/rules/users.md |

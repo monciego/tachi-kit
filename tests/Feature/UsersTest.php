@@ -481,3 +481,231 @@ test('superadmins can create superadmins', function () {
     expect($created->hasRole('superadmin'))->toBeTrue();
     expect($created->is_active)->toBeTrue();
 });
+
+test('renders the edit user page with the user and available roles', function () {
+    $target = User::factory()->asUser()->create([
+        'name' => 'Editable User',
+        'email' => 'editable@example.com',
+    ]);
+
+    $this->get(route('users.edit', $target))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('users/edit')
+            ->where('user.id', $target->id)
+            ->where('user.name', 'Editable User')
+            ->where('user.email', 'editable@example.com')
+            ->where('user.is_superadmin', false)
+            ->where('roles', ['admin', 'user'])
+        );
+});
+
+test('superadmins see every role on the edit user page', function () {
+    $actor = User::factory()->asSuperadmin()->create(['email' => 'actor@example.com']);
+    $target = User::factory()->asUser()->create();
+
+    $this->actingAs($actor)
+        ->get(route('users.edit', $target))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('roles', ['superadmin', 'admin', 'user'])
+        );
+});
+
+test('ordinary users cannot open the edit user page', function () {
+    $user = User::factory()->asUser()->create();
+    $target = User::factory()->asUser()->create();
+
+    $this->actingAs($user)
+        ->get(route('users.edit', $target))
+        ->assertForbidden();
+});
+
+test('admins cannot open the edit user page for a superadmin', function () {
+    $superAdmin = User::factory()->asSuperadmin()->create();
+
+    $this->get(route('users.edit', $superAdmin))
+        ->assertForbidden();
+});
+
+test('updates a users name and email', function () {
+    $target = User::factory()->asUser()->create([
+        'name' => 'Old Name',
+        'email' => 'old@example.com',
+    ]);
+
+    $this->from(route('users.index'))
+        ->put(route('users.update', $target), [
+            'name' => 'New Name',
+            'email' => 'new@example.com',
+            'roles' => ['user'],
+        ])
+        ->assertRedirect(route('users.index'));
+
+    $this->assertDatabaseHas('users', [
+        'id' => $target->id,
+        'name' => 'New Name',
+        'email' => 'new@example.com',
+    ]);
+});
+
+test('updates a users roles', function () {
+    $target = User::factory()->asUser()->create();
+
+    $this->from(route('users.index'))
+        ->put(route('users.update', $target), [
+            'name' => $target->name,
+            'email' => $target->email,
+            'roles' => ['admin', 'user'],
+        ])
+        ->assertRedirect(route('users.index'));
+
+    $target->refresh();
+
+    expect($target->roles->pluck('name')->sort()->values()->all())->toBe(['admin', 'user']);
+});
+
+test('updates a users password when provided', function () {
+    $target = User::factory()->asUser()->create();
+
+    $this->from(route('users.index'))
+        ->put(route('users.update', $target), [
+            'name' => $target->name,
+            'email' => $target->email,
+            'password' => 'new-secret-password',
+            'password_confirmation' => 'new-secret-password',
+            'roles' => ['user'],
+        ])
+        ->assertRedirect(route('users.index'));
+
+    $target->refresh();
+
+    expect(Hash::check('new-secret-password', $target->password))->toBeTrue();
+});
+
+test('keeps the password when none is provided on update', function () {
+    $target = User::factory()->asUser()->create([
+        'password' => Hash::make('original-password'),
+    ]);
+
+    $this->from(route('users.index'))
+        ->put(route('users.update', $target), [
+            'name' => $target->name,
+            'email' => $target->email,
+            'roles' => ['user'],
+        ])
+        ->assertRedirect(route('users.index'));
+
+    $target->refresh();
+
+    expect(Hash::check('original-password', $target->password))->toBeTrue();
+});
+
+test('admins cannot assign the superadmin role when updating', function () {
+    $target = User::factory()->asUser()->create();
+
+    $this->from(route('users.index'))
+        ->put(route('users.update', $target), [
+            'name' => $target->name,
+            'email' => $target->email,
+            'roles' => ['superadmin'],
+        ])
+        ->assertSessionHasErrors('roles.0');
+
+    $target->refresh();
+
+    expect($target->roles->pluck('name')->all())->toBe(['user']);
+});
+
+test('admins cannot update a superadmin account', function () {
+    $superAdmin = User::factory()->asSuperadmin()->create();
+
+    $this->from(route('users.index'))
+        ->put(route('users.update', $superAdmin), [
+            'name' => 'Hacked',
+            'email' => $superAdmin->email,
+            'roles' => ['admin'],
+        ])
+        ->assertForbidden();
+
+    $this->assertDatabaseHas('users', [
+        'id' => $superAdmin->id,
+        'name' => $superAdmin->name,
+    ]);
+});
+
+test('ordinary users cannot update users', function () {
+    $user = User::factory()->asUser()->create();
+    $target = User::factory()->asUser()->create();
+
+    $this->actingAs($user)
+        ->from(route('users.index'))
+        ->put(route('users.update', $target), [
+            'name' => 'Hacked',
+            'email' => $target->email,
+            'roles' => ['user'],
+        ])
+        ->assertForbidden();
+});
+
+test('superadmins can update a superadmin account', function () {
+    $actor = User::factory()->asSuperadmin()->create(['email' => 'actor@example.com']);
+    $target = User::factory()->asSuperadmin()->create([
+        'email' => 'boss@example.com',
+    ]);
+
+    $this->actingAs($actor)
+        ->from(route('users.index'))
+        ->put(route('users.update', $target), [
+            'name' => 'Updated Boss',
+            'email' => $target->email,
+            'roles' => ['superadmin', 'admin'],
+        ])
+        ->assertRedirect(route('users.index'));
+
+    $target->refresh();
+
+    expect($target->name)->toBe('Updated Boss');
+    expect($target->roles->pluck('name')->sort()->values()->all())->toBe(['admin', 'superadmin']);
+});
+
+test('superadmins cannot demote themselves', function () {
+    $actor = User::factory()->asSuperadmin()->create(['email' => 'actor@example.com']);
+
+    $this->actingAs($actor)
+        ->from(route('users.index'))
+        ->put(route('users.update', $actor), [
+            'name' => $actor->name,
+            'email' => $actor->email,
+            'roles' => ['admin'],
+        ])
+        ->assertForbidden();
+
+    $actor->refresh();
+
+    expect($actor->hasRole('superadmin'))->toBeTrue();
+});
+
+test('email must be unique when updating', function () {
+    $other = User::factory()->asUser()->create(['email' => 'taken@example.com']);
+    $target = User::factory()->asUser()->create();
+
+    $this->from(route('users.index'))
+        ->put(route('users.update', $target), [
+            'name' => $target->name,
+            'email' => 'taken@example.com',
+            'roles' => ['user'],
+        ])
+        ->assertSessionHasErrors('email');
+});
+
+test('requires at least one role when updating', function () {
+    $target = User::factory()->asUser()->create();
+
+    $this->from(route('users.index'))
+        ->put(route('users.update', $target), [
+            'name' => $target->name,
+            'email' => $target->email,
+        ])
+        ->assertSessionHasErrors('roles');
+});

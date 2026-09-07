@@ -13,7 +13,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -26,7 +25,7 @@ import {
 } from "@/components/ui/tooltip";
 import users from "@/routes/users";
 import type { BreadcrumbItem } from "@/types";
-import { getRoleBadgeVariant, getRoleColor } from "@/utils/role-color";
+import RolePicker from "./roles-picker";
 
 interface CreateUserProps {
     roles: string[];
@@ -47,17 +46,6 @@ export default function Create({ roles }: CreateUserProps) {
     const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
 
     const hasSuperAdmin = selectedRoles.includes("superadmin");
-
-    const handleRoleToggle = (roleName: string) => {
-        setSelectedRoles((prev) =>
-            prev.includes(roleName)
-                ? prev.filter((role) => role !== roleName)
-                : [...prev, roleName],
-        );
-    };
-
-    const titleCase = (roleName: string) =>
-        roleName.charAt(0).toUpperCase() + roleName.slice(1);
 
     return (
         <>
@@ -178,53 +166,11 @@ export default function Create({ roles }: CreateUserProps) {
                                             )}
                                         </div>
 
-                                        <div className="mx-4 grid gap-3 rounded-lg border p-2 sm:grid-cols-4">
-                                            {roles.map((role) => {
-                                                const isSelected =
-                                                    selectedRoles.includes(
-                                                        role,
-                                                    );
-
-                                                return (
-                                                    <div
-                                                        key={role}
-                                                        className={`flex items-center space-x-2 rounded-md border p-2 transition-colors ${
-                                                            isSelected
-                                                                ? "border-primary bg-primary/5"
-                                                                : "hover:border-border hover:bg-muted/50 border-transparent"
-                                                        }`}
-                                                    >
-                                                        <Checkbox
-                                                            id={role}
-                                                            name="roles[]"
-                                                            value={role}
-                                                            checked={isSelected}
-                                                            onCheckedChange={() =>
-                                                                handleRoleToggle(
-                                                                    role,
-                                                                )
-                                                            }
-                                                            className="mt-0.5"
-                                                        />
-                                                        <Label
-                                                            htmlFor={role}
-                                                            className="cursor-pointer leading-none font-medium"
-                                                        >
-                                                            <Badge
-                                                                variant={getRoleBadgeVariant(
-                                                                    role,
-                                                                )}
-                                                                className={`${getRoleColor(role)} text-xs`}
-                                                            >
-                                                                {titleCase(
-                                                                    role,
-                                                                )}
-                                                            </Badge>
-                                                        </Label>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
+                                        <RolePicker
+                                            roles={roles}
+                                            selected={selectedRoles}
+                                            onChange={setSelectedRoles}
+                                        />
                                         <InputError
                                             message={errors.roles}
                                             className="mx-4"

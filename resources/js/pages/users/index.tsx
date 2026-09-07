@@ -33,8 +33,8 @@ export default function Index({
 
                 {canCreateUsers && (
                     <Link href={users.create().url}>
-                        <Button>
-                            <Plus className="mr-2 h-4 w-4" />
+                        <Button size="sm">
+                            <Plus className="h-4 w-4" />
                             Add User
                         </Button>
                     </Link>

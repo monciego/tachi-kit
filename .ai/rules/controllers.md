@@ -21,3 +21,6 @@ Users have an `is_active` flag. `updateStatus` (PATCH /users/{user}/status) acce
 
 ## create/store user flow + role assignment rules
 Creating users is gated to superadmin/admin (StoreUserRequest::authorize + UserController::create abort 403). store() creates the user (plaintext password — the model's `hashed` cast encrypts it) then `assignRole($validated roles)`; use `Inertia::flash('toast', ...)` + redirect to users.index. `availableRoleNames()` feeds both `roleOptions` (index filter) and `roles` (create page) and excludes superadmin for non-superadmins; the request's `roles.*` closure rejects superadmin assignment by non-superadmins as a validation error.
+
+## Edit/update user guards mirror create/store
+edit() aborts 403 unless actor has superadmin/admin role; also aborts 403 (with message) when a non-superadmin targets a superadmin account. update() re-checks the superadmin-target guard AND aborts 403 if a superadmin demotes themself (removes 'superadmin' from their own roles). Passwords only rehashed when a value is provided (the User model's password cast hashes it). Roles use syncRoles(). Frontend treats superadmin targets as fully read-only (all inputs disabled, submit disabled).
