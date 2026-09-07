@@ -33,6 +33,7 @@ test('lists users with server-side pagination and roles', function () {
             ->where('users.per_page', 10)
             ->where('users.current_page', 1)
             ->where('users.data.0.id', $this->admin->id)
+            ->where('users.data.0.user_code', $this->admin->user_code)
             ->where('users.data.0.roles', ['admin'])
             ->where('users.data.1.roles', ['user'])
             ->has('roleOptions', 2)
@@ -144,7 +145,7 @@ test('deletes a user', function () {
         ->delete(route('users.destroy', $target))
         ->assertRedirect(route('users.index'));
 
-    $this->assertDatabaseMissing('users', ['id' => $target->id]);
+    $this->assertSoftDeleted('users', ['id' => $target->id]);
 });
 
 test('forbids deleting your own account', function () {
@@ -253,7 +254,7 @@ test('bulk delete skips superadmins', function () {
 
     $this->assertDatabaseHas('users', ['id' => $superAdmin->id]);
     $this->assertDatabaseHas('users', ['id' => $this->admin->id]);
-    $this->assertDatabaseMissing('users', ['id' => $regular->id]);
+    $this->assertSoftDeleted('users', ['id' => $regular->id]);
 });
 
 test('bulk deletes the selected users', function () {
@@ -263,8 +264,8 @@ test('bulk deletes the selected users', function () {
         ->post(route('users.bulk-delete'), ['ids' => [$targets[0]->id, $targets[1]->id]])
         ->assertRedirect(route('users.index'));
 
-    $this->assertDatabaseMissing('users', ['id' => $targets[0]->id]);
-    $this->assertDatabaseMissing('users', ['id' => $targets[1]->id]);
+    $this->assertSoftDeleted('users', ['id' => $targets[0]->id]);
+    $this->assertSoftDeleted('users', ['id' => $targets[1]->id]);
     $this->assertDatabaseHas('users', ['id' => $targets[2]->id]);
 });
 
@@ -276,7 +277,7 @@ test('bulk delete never deletes your own account', function () {
         ->assertRedirect(route('users.index'));
 
     $this->assertDatabaseHas('users', ['id' => $this->admin->id]);
-    $this->assertDatabaseMissing('users', ['id' => $target->id]);
+    $this->assertSoftDeleted('users', ['id' => $target->id]);
 });
 
 test('bulk delete requires an array of ids', function () {

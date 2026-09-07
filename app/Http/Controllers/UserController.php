@@ -86,6 +86,7 @@ class UserController extends Controller
 
         $users = $users->through(fn (User $user): array => [
             'id' => $user->id,
+            'user_code' => $user->user_code,
             'name' => $user->name,
             'email' => $user->email,
             'roles' => $user->roles->pluck('name')->all(),

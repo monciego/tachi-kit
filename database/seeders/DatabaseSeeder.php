@@ -24,25 +24,33 @@ class DatabaseSeeder extends Seeder
         }
 
         User::factory()->asSuperadmin()->create([
+            'user_code' => User::generateUserCode(),
             'name' => 'Superadmin',
             'email' => 'superadmin@tachikit.com',
         ]);
 
         User::factory()->asSuperadmin()->create([
+            'user_code' => User::generateUserCode(),
             'name' => 'Superadmin II',
             'email' => 'superadmin2@tachikit.com',
         ]);
 
         User::factory()->asAdmin()->create([
+            'user_code' => User::generateUserCode(),
             'name' => 'Administrator',
             'email' => 'administrator@tachikit.com',
         ]);
 
         User::factory()->asAdmin()->create([
+            'user_code' => User::generateUserCode(),
             'name' => 'Admin Two',
             'email' => 'admin@tachikit.com',
         ]);
 
-        User::factory()->asUser()->count(50)->create();
+        for ($i = 0; $i < 50; $i++) {
+            User::factory()->asUser()->create([
+                'user_code' => User::generateUserCode(),
+            ]);
+        }
     }
 }
