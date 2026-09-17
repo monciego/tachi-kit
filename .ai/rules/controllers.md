@@ -1,6 +1,7 @@
 ---
 paths:
-    - app/Http/Controllers/UserController.php
+  - app/Http/Controllers/UserController.php
+  - 'app/Http/Controllers/**'
 ---
 
 # Controllers
@@ -24,3 +25,6 @@ Creating users is gated to superadmin/admin (StoreUserRequest::authorize + UserC
 
 ## Edit/update user guards mirror create/store
 edit() aborts 403 unless actor has superadmin/admin role; also aborts 403 (with message) when a non-superadmin targets a superadmin account. update() re-checks the superadmin-target guard AND aborts 403 if a superadmin demotes themself (removes 'superadmin' from their own roles). Passwords only rehashed when a value is provided (the User model's password cast hashes it). Roles use syncRoles(). Frontend treats superadmin targets as fully read-only (all inputs disabled, submit disabled).
+
+## Resolve single JsonResource props for Inertia
+Passing a JsonResource directly as an Inertia prop wraps it in a `{"data": {...}}` envelope, so `role.permissions` arrives undefined and spreads/iteration throw "not iterable". Resolve single-resource props to a flat array before render: `RoleResource::make($role)->resolve()`. (Paginated collections via `RoleResource::collection($paginator)` are fine — their `data` key matches the frontend `Paginator<T>` shape.)

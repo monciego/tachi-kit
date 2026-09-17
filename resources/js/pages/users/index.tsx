@@ -6,18 +6,25 @@ import users from "@/routes/users";
 import { type Paginator } from "@/types/table";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { BreadcrumbItem } from "@/types";
+import { usePermissions } from "@/hooks/use-permissions";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface IndexProps {
     users: Paginator<User>;
     roleOptions: string[];
-    canCreateUsers: boolean;
 }
 
-export default function Index({
-    users: paginator,
-    roleOptions,
-    canCreateUsers,
-}: IndexProps) {
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: "Users",
+        href: users.index(),
+    },
+];
+
+export default function Index({ users: paginator, roleOptions }: IndexProps) {
+    const { can } = usePermissions();
+
     return (
         <>
             <Head title="Users" />
@@ -31,7 +38,7 @@ export default function Index({
                     </p>
                 </div>
 
-                {canCreateUsers && (
+                {can(PERMISSIONS.USERS_CREATE) && (
                     <Link href={users.create().url}>
                         <Button size="sm">
                             <Plus className="h-4 w-4" />
@@ -90,10 +97,5 @@ export default function Index({
 }
 
 Index.layout = {
-    breadcrumbs: [
-        {
-            title: "Users",
-            href: users.index(),
-        },
-    ],
+    breadcrumbs,
 };

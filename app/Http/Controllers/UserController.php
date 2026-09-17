@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Permission;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,11 +16,15 @@ use Inertia\Response;
 
 class UserController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * List users with server-side search, filtering, sorting and pagination.
      */
     public function index(Request $request): Response|RedirectResponse
     {
+        $this->authorize('viewAny', User::class);
+
         $perPage = (int) $request->query('per_page', 10);
 
         if (! in_array($perPage, [10, 20, 50, 100], true)) {
@@ -98,7 +104,6 @@ class UserController extends Controller
         return Inertia::render('users/index', [
             'users' => $users,
             'roleOptions' => $this->availableRoleNames(),
-            'canCreateUsers' => $request->user()->hasAnyRole(['superadmin', 'admin']),
         ]);
     }
 
@@ -107,8 +112,7 @@ class UserController extends Controller
      */
     public function create(Request $request): Response
     {
-        // to be removed if permission is applied
-        abort_unless($request->user()->hasAnyRole(['superadmin', 'admin']), 403);
+        $this->authorize('create', User::class);
 
         return Inertia::render('users/create', [
             'roles' => $this->availableRoleNames(),
@@ -143,13 +147,7 @@ class UserController extends Controller
      */
     public function edit(Request $request, User $user): Response
     {
-        abort_unless($request->user()->hasAnyRole(['superadmin', 'admin']), 403);
-
-        abort_if(
-            ! $request->user()->hasRole('superadmin') && $user->hasRole('superadmin'),
-            403,
-            __('Superadmin accounts cannot be edited.'),
-        );
+        $this->authorize('update', $user);
 
         return Inertia::render('users/edit', [
             'user' => [
@@ -168,21 +166,9 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        abort_if(
-            ! $request->user()->hasRole('superadmin') && $user->hasRole('superadmin'),
-            403,
-            __('Superadmin accounts cannot be edited.'),
-        );
+        $this->authorize('update', [$user, $request]);
 
         $data = $request->validated();
-
-        abort_if(
-            $user->id === $request->user()->id
-                && $user->hasRole('superadmin')
-                && ! in_array('superadmin', $data['roles']),
-            403,
-            __('You cannot remove your own superadmin role.'),
-        );
 
         $attributes = [
             'name' => $data['name'],
@@ -209,9 +195,7 @@ class UserController extends Controller
      */
     public function destroy(Request $request, User $user): RedirectResponse
     {
-        abort_if($user->hasRole('superadmin'), 403, __('Superadmin accounts cannot be deleted.'));
-
-        abort_unless($user->id !== $request->user()->id, 403, __('You cannot delete your own account.'));
+        $this->authorize('delete', $user);
 
         $user->delete();
 
@@ -248,6 +232,8 @@ class UserController extends Controller
      */
     public function bulkDestroy(Request $request): RedirectResponse
     {
+        abort_unless($request->user()->hasPermissionTo(Permission::UsersDelete->value), 403);
+
         $ids = $request->validate([
             'ids' => ['required', 'array', 'min:1'],
             'ids.*' => ['integer', 'distinct', 'exists:users,id'],

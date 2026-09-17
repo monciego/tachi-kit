@@ -1,3 +1,6 @@
+import type { PermissionsMap } from "./permissions";
+import type { RoleMeta } from "./role";
+
 export type User = {
     id: number;
     name: string;
@@ -12,6 +15,8 @@ export type User = {
 
 export type Auth = {
     user: User;
+    roles: RoleMeta[];
+    can: PermissionsMap;
 };
 
 export type Passkey = {

@@ -1,11 +1,14 @@
 <?php
 
 use App\Models\User;
+use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
+    $this->seed(RolePermissionSeeder::class);
+
     $this->admin = User::factory()->asAdmin()->create(['name' => 'Admin User']);
     $this->actingAs($this->admin);
 });
@@ -37,6 +40,9 @@ test('lists users with server-side pagination and roles', function () {
             ->where('users.data.0.roles', ['admin'])
             ->where('users.data.1.roles', ['user'])
             ->has('roleOptions', 2)
+            ->has('roles', 1)
+            ->where('roles.0.name', 'admin')
+            ->where('roles.0.is_system_role', true)
         );
 });
 
