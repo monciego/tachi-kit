@@ -31,4 +31,16 @@ class StoreRoleRequest extends FormRequest
             'permissions.*' => ['required', 'string', Rule::in(Permission::values())],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'The role name is required.',
+            'name.unique' => 'A role with this name already exists.',
+            'permissions.required' => 'Please select at least one permission.',
+            'permissions.min' => 'Please select at least one permission.',
+            'permissions.*.exists' => 'One or more selected permissions are invalid.',
+        ];
+    }
+
 }
