@@ -13,6 +13,8 @@ enum Permission: string
 
     case UsersDelete = 'users.delete';
 
+    case UsersStatus = 'users.status';
+
     // Roles
     case RolesView = 'roles.view';
 
@@ -32,6 +34,7 @@ enum Permission: string
             self::UsersCreate => 'Create Users',
             self::UsersEdit => 'Edit Users',
             self::UsersDelete => 'Delete Users',
+            self::UsersStatus => 'Change User Status',
             self::RolesView => 'View Roles',
             self::RolesCreate => 'Create Roles',
             self::RolesEdit => 'Edit Roles',

@@ -63,6 +63,7 @@ test('can map degrades gracefully when permissions are not seeded', function () 
         Permission::UsersCreate->value => false,
         Permission::UsersEdit->value => false,
         Permission::UsersDelete->value => false,
+        Permission::UsersStatus->value => false,
         Permission::RolesView->value => false,
         Permission::RolesCreate->value => false,
         Permission::RolesEdit->value => false,

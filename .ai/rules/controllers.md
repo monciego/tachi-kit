@@ -28,3 +28,12 @@ edit() aborts 403 unless actor has superadmin/admin role; also aborts 403 (with 
 
 ## Resolve single JsonResource props for Inertia
 Passing a JsonResource directly as an Inertia prop wraps it in a `{"data": {...}}` envelope, so `role.permissions` arrives undefined and spreads/iteration throw "not iterable". Resolve single-resource props to a flat array before render: `RoleResource::make($role)->resolve()`. (Paginated collections via `RoleResource::collection($paginator)` are fine — their `data` key matches the frontend `Paginator<T>` shape.)
+
+## updateStatus requires users.status permission
+updateStatus is gated by the users.status permission (abort_unless hasPermissionTo), in addition to the self-target 403 and superadmin-deactivate 403 guards.
+
+## updateStatus authorizes via policy, not abort_unless
+updateStatus authorizes through the UserPolicy updateStatus ability (users.status permission) via $this->authorize(), NOT a raw abort_unless. Self-target and superadmin-deactivate guards stay in the controller (they depend on the validated $is_active value).
+
+## updateStatus delegates all guards to UserPolicy
+updateStatus validates is_active (required boolean), then authorizes via the UserPolicy updateStatus ability passing [$user, $request] — no controller-level abort_unless/abort_if guards remain. All target guards (self-status, superadmin deactivation) live in the policy.

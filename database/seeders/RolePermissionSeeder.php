@@ -33,6 +33,7 @@ class RolePermissionSeeder extends Seeder
             PermissionEnum::UsersCreate->value,
             PermissionEnum::UsersEdit->value,
             PermissionEnum::UsersDelete->value,
+            PermissionEnum::UsersStatus->value,
         ]);
 
         Role::query()->firstOrCreate(['name' => 'user']);

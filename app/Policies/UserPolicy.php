@@ -44,6 +44,23 @@ class UserPolicy
         return $user->hasPermissionTo(Permission::UsersEdit->value);
     }
 
+    public function updateStatus(User $user, User $model, ?Request $request = null): Response
+    {
+        if ($user->id === $model->id) {
+            return Response::deny('You cannot change your own account status.');
+        }
+
+        $isActive = $request?->boolean('is_active') ?? false;
+
+        if (! $isActive && $model->hasRole('superadmin')) {
+            return Response::deny('Superadmin accounts cannot be deactivated.');
+        }
+
+        return $user->hasPermissionTo(Permission::UsersStatus->value)
+            ? Response::allow()
+            : Response::deny();
+    }
+
     public function delete(User $user, User $model): Response
     {
         if ($user->id === $model->id) {

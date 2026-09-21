@@ -9,6 +9,7 @@ export const PERMISSIONS = {
     USERS_CREATE: "users.create",
     USERS_EDIT: "users.edit",
     USERS_DELETE: "users.delete",
+    USERS_STATUS: "users.status",
     ROLES_VIEW: "roles.view",
     ROLES_CREATE: "roles.create",
     ROLES_EDIT: "roles.edit",
@@ -20,6 +21,7 @@ export const PERMISSION_LABELS: PermissionLabels = {
     "users.create": "Create Users",
     "users.edit": "Edit Users",
     "users.delete": "Delete Users",
+    "users.status": "Change User Status",
     "roles.view": "View Roles",
     "roles.create": "Create Roles",
     "roles.edit": "Edit Roles",
@@ -35,6 +37,7 @@ export const PERMISSION_GROUPS: Record<
         PERMISSIONS.USERS_CREATE,
         PERMISSIONS.USERS_EDIT,
         PERMISSIONS.USERS_DELETE,
+        PERMISSIONS.USERS_STATUS,
     ],
     Roles: [
         PERMISSIONS.ROLES_VIEW,

@@ -363,6 +363,18 @@ test('forbids deactivating a superadmin', function () {
     $this->assertDatabaseHas('users', ['id' => $superAdmin->id, 'is_active' => true]);
 });
 
+test('forbids users without the users.status permission from changing status', function () {
+    $actor = User::factory()->asUser()->create(['email' => 'actor@example.com']);
+    $target = User::factory()->asUser()->create(['email' => 'target@example.com']);
+
+    $this->actingAs($actor)
+        ->from(route('users.index'))
+        ->patch(route('users.update-status', $target), ['is_active' => false])
+        ->assertForbidden();
+
+    $this->assertDatabaseHas('users', ['id' => $target->id, 'is_active' => true]);
+});
+
 test('status update requires a boolean value', function () {
     $target = User::factory()->asUser()->create();
 

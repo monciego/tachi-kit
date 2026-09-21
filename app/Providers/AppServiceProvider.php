@@ -31,9 +31,15 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(Role::class, RolePolicy::class);
         // Superadmin bypasses all authorization checks, except self-update
-        // where UserPolicy still applies so a superadmin cannot demote themselves.
+        // and updateStatus, where UserPolicy still applies so a superadmin
+        // cannot demote themselves or change their own / another superadmin's
+        // account status.
         Gate::before(function (User $user, string $ability, array $arguments) {
             if ($user->hasRole('superadmin')) {
+                if ($ability === 'updateStatus') {
+                    return null;
+                }
+
                 if ($ability === 'update') {
                     $subject = $arguments[0] ?? null;
 

@@ -124,6 +124,8 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request): RedirectResponse
     {
+        $this->authorize('create', User::class);
+
         $data = $request->validated();
 
         $user = User::query()->create([
@@ -213,9 +215,7 @@ class UserController extends Controller
             'is_active' => ['required', 'boolean'],
         ])['is_active'];
 
-        abort_unless($user->id !== $request->user()->id, 403, __('You cannot change your own account status.'));
-
-        abort_if(! $isActive && $user->hasRole('superadmin'), 403, __('Superadmin accounts cannot be deactivated.'));
+        $this->authorize('updateStatus', [$user, $request]);
 
         $user->update(['is_active' => $isActive]);
 

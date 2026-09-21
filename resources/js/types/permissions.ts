@@ -3,6 +3,7 @@ export type PermissionName =
     | "users.create"
     | "users.edit"
     | "users.delete"
+    | "users.status"
     | "roles.view"
     | "roles.create"
     | "roles.edit"

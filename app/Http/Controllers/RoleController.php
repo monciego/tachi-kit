@@ -78,6 +78,8 @@ class RoleController extends Controller
 
     public function store(StoreRoleRequest $request): RedirectResponse
     {
+        $this->authorize('create', Role::class);
+
         $data = $request->validated();
 
         $role = Role::create(['name' => $data['name']]);

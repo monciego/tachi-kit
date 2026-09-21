@@ -20,6 +20,8 @@ import { type DataTableFeatures } from "@/components/data-table-features";
 import users from "@/routes/users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getRoleBadgeVariant, getRoleColor } from "@/utils/role-color";
+import { PERMISSIONS } from "@/constants/permissions";
+import { usePermissions } from "@/hooks/use-permissions";
 
 export interface User {
     id: number;
@@ -173,12 +175,20 @@ export const columns = columnHelper.columns([
 ]);
 
 function UserRowActions({ user }: { user: User }) {
+    const { can } = usePermissions();
     const { auth } = usePage().props;
     const [open, setOpen] = React.useState(false);
 
     const canChangeStatus =
-        user.id !== auth.user.id && !user.roles.includes("superadmin");
+        user.id !== auth.user.id &&
+        !user.roles.includes("superadmin") &&
+        can(PERMISSIONS.USERS_STATUS);
     const canDelete = user.deletable;
+
+    const canDoAllActions =
+        can(PERMISSIONS.USERS_EDIT) ||
+        can(PERMISSIONS.USERS_STATUS) ||
+        can(PERMISSIONS.USERS_DELETE);
 
     const handleDelete = () => {
         router.delete(users.destroy(user.id).url, {
@@ -197,71 +207,88 @@ function UserRowActions({ user }: { user: User }) {
 
     return (
         <>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="data-[state=open]:bg-muted size-8"
-                    >
-                        <MoreHorizontal />
-                        <span className="sr-only">Open menu</span>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-40">
-                    <DropdownMenuItem asChild>
-                        <Link href={users.edit(user.id).url}>
-                            <Pencil />
-                            Edit
-                        </Link>
-                    </DropdownMenuItem>
-                    {canChangeStatus && (
-                        <>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                onClick={() =>
-                                    handleStatusChange(!user.is_active)
-                                }
+            {canDoAllActions && (
+                <>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="data-[state=open]:bg-muted size-8"
                             >
-                                {user.is_active ? <UserX /> : <UserCheck />}
-                                {user.is_active ? "Deactivate" : "Activate"}
-                            </DropdownMenuItem>
-                        </>
-                    )}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                        variant="destructive"
-                        onClick={() => setOpen(true)}
-                    >
-                        <Trash2 />
-                        Delete
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
+                                <MoreHorizontal />
+                                <span className="sr-only">Open menu</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-40">
+                            {can(PERMISSIONS.USERS_EDIT) && (
+                                <DropdownMenuItem asChild>
+                                    <Link href={users.edit(user.id).url}>
+                                        <Pencil />
+                                        Edit
+                                    </Link>
+                                </DropdownMenuItem>
+                            )}
+                            {canChangeStatus && (
+                                <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        onClick={() =>
+                                            handleStatusChange(!user.is_active)
+                                        }
+                                    >
+                                        {user.is_active ? (
+                                            <UserX />
+                                        ) : (
+                                            <UserCheck />
+                                        )}
+                                        {user.is_active
+                                            ? "Deactivate"
+                                            : "Activate"}
+                                    </DropdownMenuItem>
+                                </>
+                            )}
+                            {can(PERMISSIONS.USERS_DELETE) && (
+                                <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        variant="destructive"
+                                        onClick={() => setOpen(true)}
+                                    >
+                                        <Trash2 />
+                                        Delete
+                                    </DropdownMenuItem>
+                                </>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
-            <DeleteDialog
-                item={{ id: user.id, name: user.name }}
-                open={open}
-                onOpenChange={setOpen}
-                onDelete={handleDelete}
-                type="user"
-                title={`Delete ${user.name}`}
-                description={
-                    <>
-                        This will permanently delete{" "}
-                        <span className="text-primary font-semibold">
-                            {user.name}
-                        </span>{" "}
-                        ({user.email}) and remove their access to the app.
-                    </>
-                }
-                canDelete={canDelete}
-                warningMessage={
-                    !canDelete
-                        ? "This user is a protected account and cannot be deleted."
-                        : undefined
-                }
-            />
+                    <DeleteDialog
+                        item={{ id: user.id, name: user.name }}
+                        open={open}
+                        onOpenChange={setOpen}
+                        onDelete={handleDelete}
+                        type="user"
+                        title={`Delete ${user.name}`}
+                        description={
+                            <>
+                                This will permanently delete{" "}
+                                <span className="text-primary font-semibold">
+                                    {user.name}
+                                </span>{" "}
+                                ({user.email}) and remove their access to the
+                                app.
+                            </>
+                        }
+                        canDelete={canDelete}
+                        warningMessage={
+                            !canDelete
+                                ? "This user is a protected account and cannot be deleted."
+                                : undefined
+                        }
+                    />
+                </>
+            )}
         </>
     );
 }

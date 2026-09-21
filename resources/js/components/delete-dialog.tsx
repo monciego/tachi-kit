@@ -56,6 +56,10 @@ export function DeleteDialog({
         }
     }, [dialogOpen]);
 
+    useEffect(() => {
+        setIsDialogOpen(false);
+    }, [item.id]);
+
     const handleDelete = () => {
         setIsDeleting(true);
         onDelete();
