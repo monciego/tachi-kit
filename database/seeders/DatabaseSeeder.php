@@ -47,9 +47,13 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@tachikit.com',
         ]);
 
+        // Spread demo members over the past year (with a few inactive
+        // accounts) so the dashboard stats and sign-ups chart have data.
         for ($i = 0; $i < 50; $i++) {
             User::factory()->asUser()->create([
                 'user_code' => User::generateUserCode(),
+                'is_active' => fake()->boolean(90),
+                'created_at' => fake()->dateTimeBetween(now()->subMonths(11)->startOfMonth(), now()),
             ]);
         }
     }

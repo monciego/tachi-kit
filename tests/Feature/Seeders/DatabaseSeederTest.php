@@ -23,6 +23,15 @@ test('seeder creates the demo users with their roles', function () {
     expect(User::role('user')->count())->toBe(50);
 });
 
+test('seeder spreads demo members over the past year', function () {
+    $this->seed();
+
+    $members = User::role('user')->get();
+
+    expect($members->every(fn (User $user) => $user->created_at->gte(now()->subMonths(11)->startOfMonth())))->toBeTrue()
+        ->and($members->map(fn (User $user) => $user->created_at->format('Y-m'))->unique()->count())->toBeGreaterThan(1);
+});
+
 test('seeder can be re-run without creating duplicate records', function () {
     $this->seed();
     $this->seed();
