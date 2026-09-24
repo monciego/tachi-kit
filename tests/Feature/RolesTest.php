@@ -69,3 +69,24 @@ test('forbids users without the roles.edit permission', function () {
         ->get(route('roles.edit', $role))
         ->assertForbidden();
 });
+
+test('forbids deleting system roles, even for superadmins', function () {
+    $user = Role::query()->where('name', 'user')->sole();
+
+    $this->actingAs(User::factory()->asSuperadmin()->create())
+        ->delete(route('roles.destroy', $user))
+        ->assertForbidden();
+
+    $this->assertModelExists($user);
+});
+
+test('forbids deleting roles that still have users', function () {
+    $role = Role::query()->create(['name' => 'Auditor']);
+    User::factory()->create()->assignRole($role);
+
+    $this->actingAs(User::factory()->asSuperadmin()->create())
+        ->delete(route('roles.destroy', $role))
+        ->assertForbidden();
+
+    $this->assertModelExists($role);
+});
