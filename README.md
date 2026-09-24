@@ -22,21 +22,42 @@ It is built on top of the official [Laravel React starter kit](https://github.co
 
 - PHP 8.4+ and Composer
 - Node.js 22+ and npm
-- MySQL or SQLite
+- SQLite (the default) or MySQL
 
 ## Getting started
 
+Create a new app with the Laravel installer or Composer:
+
 ```bash
-git clone <your-repo-url> my-app
-cd my-app
-composer setup      # install dependencies, create .env, generate a key, migrate, link storage, build assets
+laravel new my-app --using=monciego/tachi-kit
+# or
+composer create-project monciego/tachi-kit my-app
 ```
 
-Point `.env` at your database, then seed and start the app:
+This creates `.env`, a SQLite database, runs the migrations and seeds the roles and permissions. Then install the frontend and start the app:
 
 ```bash
-php artisan migrate --seed
+cd my-app
+npm install
+php artisan storage:link
 composer dev        # start the app and Vite
+```
+
+To try it with demo accounts, run `php artisan db:seed`.
+
+Working from a clone of this repository instead? `composer setup` installs everything, creates `.env`, migrates, links storage and builds the assets.
+
+### Using MySQL
+
+SQLite works out of the box. To use MySQL, update `.env` before migrating:
+
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=tachikit
+DB_USERNAME=root
+DB_PASSWORD=
 ```
 
 ### Demo accounts
