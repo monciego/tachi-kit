@@ -61,3 +61,10 @@ it('can look a user up by their code', function () {
     expect(User::findByCode($user->user_code))->toBeInstanceOf(User::class)
         ->and(User::findByCode('NOPE-0001'))->toBeNull();
 });
+
+it('only counts codes of the requested width', function () {
+    User::factory()->create(['user_code' => 'USR-0007']);
+    User::factory()->create(['user_code' => 'USR-123456']);
+
+    expect(User::generateUserCode())->toBe('USR-0008');
+});

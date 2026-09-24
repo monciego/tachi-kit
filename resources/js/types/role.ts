@@ -1,6 +1,6 @@
-import type { PermissionName } from "./permissions";
+import type { PermissionName } from './permissions';
 
-export type SystemRoleName = "superadmin" | "admin" | "user";
+export type SystemRoleName = 'superadmin' | 'admin' | 'user';
 
 export type RoleMeta = {
     id: number;

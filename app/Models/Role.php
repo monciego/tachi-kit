@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Spatie\Permission\Models\Role as SpatieRole;
 
+/**
+ * @property-read Collection<int, User> $users
+ */
 class Role extends SpatieRole
 {
     /**

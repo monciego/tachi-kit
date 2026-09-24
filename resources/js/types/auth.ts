@@ -1,5 +1,5 @@
-import type { PermissionsMap } from "./permissions";
-import type { RoleMeta } from "./role";
+import type { PermissionsMap } from './permissions';
+import type { RoleMeta } from './role';
 
 export type User = {
     id: number;

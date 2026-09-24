@@ -1,6 +1,6 @@
-import { usePage } from "@inertiajs/react";
+import { usePage } from '@inertiajs/react';
 
-import type { PermissionName } from "@/types/permissions";
+import type { PermissionName } from '@/types/permissions';
 
 export function usePermissions() {
     const { auth } = usePage().props;
@@ -25,7 +25,7 @@ export function usePermissions() {
         return auth.roles?.some((role) => role.name === roleName) ?? false;
     };
 
-    const isTalent = (): boolean => hasRole("talent");
+    const isTalent = (): boolean => hasRole('talent');
 
     return {
         can,

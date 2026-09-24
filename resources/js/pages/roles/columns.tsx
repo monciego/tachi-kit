@@ -1,34 +1,31 @@
-import { Link, router } from "@inertiajs/react";
-import { createColumnHelper } from "@tanstack/react-table";
-import { Edit, Shield } from "lucide-react";
+import { Link, router } from '@inertiajs/react';
+import { createColumnHelper } from '@tanstack/react-table';
+import { Edit, Shield } from 'lucide-react';
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { DeleteDialog } from "@/components/delete-dialog";
-import { DataTableColumnHeader } from "@/components/data-table-column-header";
-import { type DataTableFeatures } from "@/components/data-table-features";
-import { UserAvatarStack } from "@/components/user-avatar-stack";
-import {
-    PERMISSIONS,
-    getPermissionLabel,
-} from "@/constants/permissions";
-import { usePermissions } from "@/hooks/use-permissions";
-import { destroy, edit } from "@/routes/roles";
-import type { PermissionName } from "@/types/permissions";
-import type { Role } from "@/types/role";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { DeleteDialog } from '@/components/delete-dialog';
+import { DataTableColumnHeader } from '@/components/data-table-column-header';
+import { type DataTableFeatures } from '@/components/data-table-features';
+import { UserAvatarStack } from '@/components/user-avatar-stack';
+import { PERMISSIONS, getPermissionLabel } from '@/constants/permissions';
+import { usePermissions } from '@/hooks/use-permissions';
+import { destroy, edit } from '@/routes/roles';
+import type { PermissionName } from '@/types/permissions';
+import type { Role } from '@/types/role';
 
 const columnHelper = createColumnHelper<DataTableFeatures, Role>();
 
 export const columns = columnHelper.columns([
-    columnHelper.accessor("name", {
+    columnHelper.accessor('name', {
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Role Name" />
         ),
         cell: ({ row }) => (
             <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-muted-foreground" />
+                <Shield className="text-muted-foreground h-4 w-4" />
                 <span className="font-medium capitalize">
-                    {row.getValue("name")}
+                    {row.getValue('name')}
                 </span>
                 {row.original.is_system_role && (
                     <Badge variant="outline" className="text-xs">
@@ -39,12 +36,12 @@ export const columns = columnHelper.columns([
         ),
         enableHiding: false,
     }),
-    columnHelper.accessor("permissions", {
+    columnHelper.accessor('permissions', {
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Permissions" />
         ),
         cell: ({ row }) => {
-            const permissions = row.getValue<PermissionName[]>("permissions");
+            const permissions = row.getValue<PermissionName[]>('permissions');
 
             return (
                 <div className="flex flex-wrap gap-1">
@@ -66,7 +63,7 @@ export const columns = columnHelper.columns([
             );
         },
     }),
-    columnHelper.accessor("users", {
+    columnHelper.accessor('users', {
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Users" />
         ),
@@ -78,12 +75,12 @@ export const columns = columnHelper.columns([
             />
         ),
     }),
-    columnHelper.accessor("created_at", {
+    columnHelper.accessor('created_at', {
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Created" />
         ),
         cell: ({ row }) => {
-            const value = row.getValue<string>("created_at");
+            const value = row.getValue<string>('created_at');
 
             if (!value) {
                 return null;
@@ -92,14 +89,14 @@ export const columns = columnHelper.columns([
             return (
                 <span className="text-muted-foreground">
                     {new Intl.DateTimeFormat(undefined, {
-                        dateStyle: "medium",
+                        dateStyle: 'medium',
                     }).format(new Date(value))}
                 </span>
             );
         },
     }),
     columnHelper.display({
-        id: "actions",
+        id: 'actions',
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Actions" />
         ),
@@ -131,8 +128,8 @@ function RoleRowActions({ role }: { role: Role }) {
                     title={`Delete ${role.name}`}
                     description={
                         <>
-                            Are you sure you want to delete the{" "}
-                            <span className="font-semibold">{role.name}</span>{" "}
+                            Are you sure you want to delete the{' '}
+                            <span className="font-semibold">{role.name}</span>{' '}
                             role? This action cannot be undone.
                         </>
                     }
@@ -141,8 +138,8 @@ function RoleRowActions({ role }: { role: Role }) {
                         role.users_count > 0
                             ? `Cannot delete this role because ${role.users_count} ${
                                   role.users_count === 1
-                                      ? "user is"
-                                      : "users are"
+                                      ? 'user is'
+                                      : 'users are'
                               } currently assigned to it. Please reassign them first.`
                             : undefined
                     }

@@ -1,27 +1,27 @@
-import * as React from "react";
-import { Link, router, usePage } from "@inertiajs/react";
-import { createColumnHelper } from "@tanstack/react-table";
-import { MoreHorizontal, Pencil, Trash2, UserCheck, UserX } from "lucide-react";
-import { useInitials } from "@/hooks/use-initials";
-import { cn } from "cn";
+import * as React from 'react';
+import { Link, router, usePage } from '@inertiajs/react';
+import { createColumnHelper } from '@tanstack/react-table';
+import { MoreHorizontal, Pencil, Trash2, UserCheck, UserX } from 'lucide-react';
+import { useInitials } from '@/hooks/use-initials';
+import { cn } from 'cn';
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { DeleteDialog } from "@/components/delete-dialog";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { DeleteDialog } from '@/components/delete-dialog';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { DataTableColumnHeader } from "@/components/data-table-column-header";
-import { type DataTableFeatures } from "@/components/data-table-features";
-import users from "@/routes/users";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getRoleBadgeVariant, getRoleColor } from "@/utils/role-color";
-import { PERMISSIONS } from "@/constants/permissions";
-import { usePermissions } from "@/hooks/use-permissions";
+} from '@/components/ui/dropdown-menu';
+import { DataTableColumnHeader } from '@/components/data-table-column-header';
+import { type DataTableFeatures } from '@/components/data-table-features';
+import users from '@/routes/users';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { getRoleBadgeVariant, getRoleColor } from '@/utils/role-color';
+import { PERMISSIONS } from '@/constants/permissions';
+import { usePermissions } from '@/hooks/use-permissions';
 
 export interface User {
     id: number;
@@ -72,52 +72,52 @@ function StatusBadge({ active }: { active: boolean }) {
         <Badge
             variant="outline"
             className={cn(
-                "shrink-0 rounded-full border-transparent font-normal",
+                'shrink-0 rounded-full border-transparent font-normal',
                 active
-                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                    : "bg-slate-100 text-slate-500 dark:bg-slate-900 dark:text-slate-400",
+                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                    : 'bg-slate-100 text-slate-500 dark:bg-slate-900 dark:text-slate-400',
             )}
         >
-            {active ? "Active" : "Inactive"}
+            {active ? 'Active' : 'Inactive'}
         </Badge>
     );
 }
 
 export const columns = columnHelper.columns([
-    columnHelper.accessor("user_code", {
+    columnHelper.accessor('user_code', {
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="ID" />
         ),
         cell: ({ row }) => (
-            <Badge variant="outline" className="text-xs font-mono">
-                {row.getValue("user_code")}
+            <Badge variant="outline" className="font-mono text-xs">
+                {row.getValue('user_code')}
             </Badge>
         ),
         enableHiding: false,
     }),
-    columnHelper.accessor("name", {
+    columnHelper.accessor('name', {
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Name" />
         ),
         cell: ({ row }) => <UserNameCell user={row.original} />,
     }),
-    columnHelper.accessor("email", {
+    columnHelper.accessor('email', {
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Email" />
         ),
         cell: ({ row }) => (
             <div className="text-muted-foreground max-w-65 truncate">
-                {row.getValue("email")}
+                {row.getValue('email')}
             </div>
         ),
     }),
-    columnHelper.accessor("roles", {
+    columnHelper.accessor('roles', {
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Roles" />
         ),
         enableSorting: false,
         cell: ({ row }) => {
-            const roles = row.getValue<string[]>("roles");
+            const roles = row.getValue<string[]>('roles');
             const visible = roles.slice(0, 2);
             const extra = roles.length - visible.length;
 
@@ -141,12 +141,12 @@ export const columns = columnHelper.columns([
             );
         },
     }),
-    columnHelper.accessor("created_at", {
+    columnHelper.accessor('created_at', {
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Created" />
         ),
         cell: ({ row }) => {
-            const value = row.getValue<string>("created_at");
+            const value = row.getValue<string>('created_at');
 
             if (!value) {
                 return null;
@@ -155,21 +155,21 @@ export const columns = columnHelper.columns([
             return (
                 <span className="text-muted-foreground">
                     {new Intl.DateTimeFormat(undefined, {
-                        dateStyle: "medium",
+                        dateStyle: 'medium',
                     }).format(new Date(value))}
                 </span>
             );
         },
     }),
-    columnHelper.accessor("is_active", {
-        header: "Status",
+    columnHelper.accessor('is_active', {
+        header: 'Status',
         enableSorting: false,
         cell: ({ row }) => (
-            <StatusBadge active={row.getValue<boolean>("is_active")} />
+            <StatusBadge active={row.getValue<boolean>('is_active')} />
         ),
     }),
     columnHelper.display({
-        id: "actions",
+        id: 'actions',
         cell: ({ row }) => <UserRowActions user={row.original} />,
     }),
 ]);
@@ -181,7 +181,7 @@ function UserRowActions({ user }: { user: User }) {
 
     const canChangeStatus =
         user.id !== auth.user.id &&
-        !user.roles.includes("superadmin") &&
+        !user.roles.includes('superadmin') &&
         can(PERMISSIONS.USERS_STATUS);
     const canDelete = user.deletable;
 
@@ -243,8 +243,8 @@ function UserRowActions({ user }: { user: User }) {
                                             <UserCheck />
                                         )}
                                         {user.is_active
-                                            ? "Deactivate"
-                                            : "Activate"}
+                                            ? 'Deactivate'
+                                            : 'Activate'}
                                     </DropdownMenuItem>
                                 </>
                             )}
@@ -272,10 +272,10 @@ function UserRowActions({ user }: { user: User }) {
                         title={`Delete ${user.name}`}
                         description={
                             <>
-                                This will permanently delete{" "}
+                                This will permanently delete{' '}
                                 <span className="text-primary font-semibold">
                                     {user.name}
-                                </span>{" "}
+                                </span>{' '}
                                 ({user.email}) and remove their access to the
                                 app.
                             </>
@@ -283,7 +283,7 @@ function UserRowActions({ user }: { user: User }) {
                         canDelete={canDelete}
                         warningMessage={
                             !canDelete
-                                ? "This user is a protected account and cannot be deleted."
+                                ? 'This user is a protected account and cannot be deleted.'
                                 : undefined
                         }
                     />

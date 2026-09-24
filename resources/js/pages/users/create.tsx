@@ -1,31 +1,31 @@
-import { Form, Head, Link } from "@inertiajs/react";
-import { ArrowLeft, HelpCircle, UserPlus } from "lucide-react";
-import { useState } from "react";
+import { Form, Head, Link } from '@inertiajs/react';
+import { ArrowLeft, HelpCircle, UserPlus } from 'lucide-react';
+import { useState } from 'react';
 
-import UserController from "@/actions/App/Http/Controllers/UserController";
-import InputError from "@/components/input-error";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import UserController from '@/actions/App/Http/Controllers/UserController';
+import InputError from '@/components/input-error';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Spinner } from "@/components/ui/spinner";
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Spinner } from '@/components/ui/spinner';
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-} from "@/components/ui/tooltip";
-import users from "@/routes/users";
-import type { BreadcrumbItem } from "@/types";
-import RolePicker from "./roles-picker";
+} from '@/components/ui/tooltip';
+import users from '@/routes/users';
+import type { BreadcrumbItem } from '@/types';
+import RolePicker from './roles-picker';
 
 interface CreateUserProps {
     roles: string[];
@@ -33,11 +33,11 @@ interface CreateUserProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: "Users",
+        title: 'Users',
         href: users.index(),
     },
     {
-        title: "Create User",
+        title: 'Create User',
         href: users.create(),
     },
 ];
@@ -45,7 +45,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Create({ roles }: CreateUserProps) {
     const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
 
-    const hasSuperAdmin = selectedRoles.includes("superadmin");
+    const hasSuperAdmin = selectedRoles.includes('superadmin');
 
     return (
         <>
@@ -77,8 +77,8 @@ export default function Create({ roles }: CreateUserProps) {
                         <Form
                             {...UserController.store.form()}
                             resetOnSuccess={[
-                                "password",
-                                "password_confirmation",
+                                'password',
+                                'password_confirmation',
                             ]}
                             disableWhileProcessing
                             className="space-y-3"
@@ -99,7 +99,7 @@ export default function Create({ roles }: CreateUserProps) {
                                                 htmlFor="name"
                                                 className="mb-2 block"
                                             >
-                                                Full Name{" "}
+                                                Full Name{' '}
                                                 <span className="text-destructive">
                                                     *
                                                 </span>
@@ -122,7 +122,7 @@ export default function Create({ roles }: CreateUserProps) {
                                                 htmlFor="email"
                                                 className="mb-2 block"
                                             >
-                                                Email Address{" "}
+                                                Email Address{' '}
                                                 <span className="text-destructive">
                                                     *
                                                 </span>
@@ -148,7 +148,7 @@ export default function Create({ roles }: CreateUserProps) {
                                         <div className="flex items-center justify-between px-4">
                                             <div>
                                                 <h3 className="text-foreground text-sm font-semibold">
-                                                    User Roles{" "}
+                                                    User Roles{' '}
                                                     <span className="text-destructive">
                                                         *
                                                     </span>
@@ -160,7 +160,7 @@ export default function Create({ roles }: CreateUserProps) {
                                             </div>
                                             {selectedRoles.length > 0 && (
                                                 <Badge variant="secondary">
-                                                    {selectedRoles.length}{" "}
+                                                    {selectedRoles.length}{' '}
                                                     selected
                                                 </Badge>
                                             )}
@@ -190,8 +190,8 @@ export default function Create({ roles }: CreateUserProps) {
                                             <div className="flex items-center gap-2">
                                                 <Label htmlFor="password">
                                                     {hasSuperAdmin
-                                                        ? "Password"
-                                                        : "Temporary Password"}{" "}
+                                                        ? 'Password'
+                                                        : 'Temporary Password'}{' '}
                                                     <span className="text-destructive">
                                                         *
                                                     </span>
@@ -244,8 +244,8 @@ export default function Create({ roles }: CreateUserProps) {
                                         <div className="mx-4 space-y-2">
                                             <Label htmlFor="password_confirmation">
                                                 {hasSuperAdmin
-                                                    ? "Confirm Password"
-                                                    : "Confirm Temporary Password"}{" "}
+                                                    ? 'Confirm Password'
+                                                    : 'Confirm Temporary Password'}{' '}
                                                 <span className="text-destructive">
                                                     *
                                                 </span>
@@ -296,7 +296,7 @@ export default function Create({ roles }: CreateUserProps) {
                                                     Creating...
                                                 </>
                                             ) : (
-                                                "Create User"
+                                                'Create User'
                                             )}
                                         </Button>
                                     </div>

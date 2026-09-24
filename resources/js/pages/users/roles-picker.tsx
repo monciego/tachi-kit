@@ -1,10 +1,10 @@
-import { Info } from "lucide-react";
+import { Info } from 'lucide-react';
 
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { getRoleBadgeVariant, getRoleColor } from "@/utils/role-color";
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { getRoleBadgeVariant, getRoleColor } from '@/utils/role-color';
 
 interface RolePickerProps {
     roles: string[];
@@ -13,7 +13,7 @@ interface RolePickerProps {
     disabled?: boolean;
 }
 
-const SUPERADMIN_ROLE = "superadmin";
+const SUPERADMIN_ROLE = 'superadmin';
 
 export default function RolePicker({
     roles,
@@ -50,7 +50,7 @@ export default function RolePicker({
     return (
         <div
             className={`mx-4 grid gap-3 rounded-lg border p-2 sm:grid-cols-4 ${
-                disabled ? "pointer-events-none opacity-60" : ""
+                disabled ? 'pointer-events-none opacity-60' : ''
             }`}
         >
             {roles.map((role) => {
@@ -62,9 +62,9 @@ export default function RolePicker({
                         key={role}
                         className={`flex items-center space-x-2 rounded-md border p-2 transition-colors ${
                             isSelected
-                                ? "border-primary bg-primary/5"
-                                : "hover:border-border hover:bg-muted/50 border-transparent"
-                        } ${locked ? "opacity-50" : ""}`}
+                                ? 'border-primary bg-primary/5'
+                                : 'hover:border-border hover:bg-muted/50 border-transparent'
+                        } ${locked ? 'opacity-50' : ''}`}
                     >
                         <Checkbox
                             id={role}

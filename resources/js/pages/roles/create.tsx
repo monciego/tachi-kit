@@ -1,24 +1,24 @@
-import { Form, Head } from "@inertiajs/react";
-import { Link } from "@inertiajs/react";
-import { ArrowLeft } from "lucide-react";
-import { useState } from "react";
-import RoleController from "@/actions/App/Http/Controllers/RoleController";
-import InputError from "@/components/input-error";
-import { Button } from "@/components/ui/button";
+import { Form, Head } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
+import { ArrowLeft } from 'lucide-react';
+import { useState } from 'react';
+import RoleController from '@/actions/App/Http/Controllers/RoleController';
+import InputError from '@/components/input-error';
+import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { PERMISSION_GROUPS, getPermissionLabel } from "@/constants/permissions";
-import { index } from "@/routes/roles";
-import type { PermissionName } from "@/types/permissions";
-import type { BreadcrumbItem } from "@/types";
+} from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { PERMISSION_GROUPS, getPermissionLabel } from '@/constants/permissions';
+import { index } from '@/routes/roles';
+import type { PermissionName } from '@/types/permissions';
+import type { BreadcrumbItem } from '@/types';
 
 interface Props {
     permissions: PermissionName[];
@@ -26,12 +26,12 @@ interface Props {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: "Roles",
-        href: "/roles",
+        title: 'Roles',
+        href: '/roles',
     },
     {
-        title: "Create Role",
-        href: "/roles/create",
+        title: 'Create Role',
+        href: '/roles/create',
     },
 ];
 
@@ -116,7 +116,7 @@ export default function Create({ permissions }: Props) {
                                         </div>
                                     </div>
 
-                                    <div className="space-y-4 rounded-lg border border-sidebar-border/70 p-4 dark:border-sidebar-border">
+                                    <div className="border-sidebar-border/70 dark:border-sidebar-border space-y-4 rounded-lg border p-4">
                                         {Object.entries(PERMISSION_GROUPS).map(
                                             ([group, perms]) => (
                                                 <div

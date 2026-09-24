@@ -38,16 +38,15 @@ trait GeneratesUserCode
         }
 
         return DB::transaction(function () use ($prefix, $length): string {
-            $column = static::userCodeColumn();
-            $offset = strlen($prefix) + 1;
-
-            $maxNumber = static::query()
+            // Codes are zero-padded to a fixed width, so the highest code of
+            // that exact width is also the highest number.
+            $latestCode = static::query()
                 ->withTrashed()
-                ->where($column, 'like', $prefix.'%')
+                ->where(static::userCodeColumn(), 'like', $prefix.str_repeat('_', $length))
                 ->lockForUpdate()
-                ->max(DB::raw("CAST(SUBSTRING({$column}, {$offset}) AS UNSIGNED)")) ?? 0;
+                ->max(static::userCodeColumn());
 
-            $number = (int) $maxNumber + 1;
+            $number = $latestCode === null ? 1 : (int) substr($latestCode, strlen($prefix)) + 1;
 
             if ($number > (10 ** $length) - 1) {
                 throw new RuntimeException(

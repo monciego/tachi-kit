@@ -16,6 +16,7 @@ use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
+use Laravel\Passkeys\Contracts\PasskeyUser;
 use Laravel\Passkeys\Passkeys;
 
 class FortifyServiceProvider extends ServiceProvider
@@ -70,7 +71,7 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         Passkeys::authorizeLoginUsing(
-            fn (Request $request, $user) => $user->is_active,
+            fn (Request $request, PasskeyUser $user) => $user instanceof User && $user->is_active,
         );
     }
 

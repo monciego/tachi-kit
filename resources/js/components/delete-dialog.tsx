@@ -1,8 +1,8 @@
-import { AlertTriangle, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { AlertTriangle, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
@@ -11,7 +11,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 
 interface DeleteDialogProps {
     item: {
@@ -33,7 +33,7 @@ interface DeleteDialogProps {
 export function DeleteDialog({
     item,
     onDelete,
-    type = "item",
+    type = 'item',
     title,
     description,
     warningMessage,
@@ -67,7 +67,7 @@ export function DeleteDialog({
 
     const defaultDescription = (
         <>
-            Are you sure you want to delete{" "}
+            Are you sure you want to delete{' '}
             <span className="font-semibold">{item.name}</span>?
             <br />
             This action cannot be undone.
@@ -127,7 +127,7 @@ export function DeleteDialog({
                         onClick={handleDelete}
                         disabled={!canDelete || isDeleting}
                     >
-                        {isDeleting ? "Deleting..." : "Delete"}
+                        {isDeleting ? 'Deleting...' : 'Delete'}
                     </Button>
                 </DialogFooter>
             </DialogContent>

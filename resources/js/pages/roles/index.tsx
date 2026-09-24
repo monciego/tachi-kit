@@ -1,15 +1,15 @@
-import { Head, Link } from "@inertiajs/react";
-import { Plus } from "lucide-react";
+import { Head, Link } from '@inertiajs/react';
+import { Plus } from 'lucide-react';
 
-import { DataTable } from "@/components/data-table";
-import { columns } from "./columns";
-import { Button } from "@/components/ui/button";
-import { PERMISSIONS } from "@/constants/permissions";
-import { usePermissions } from "@/hooks/use-permissions";
-import roles, { create } from "@/routes/roles";
-import type { Paginator } from "@/types/table";
-import type { Role } from "@/types/role";
-import type { BreadcrumbItem } from "@/types";
+import { DataTable } from '@/components/data-table';
+import { columns } from './columns';
+import { Button } from '@/components/ui/button';
+import { PERMISSIONS } from '@/constants/permissions';
+import { usePermissions } from '@/hooks/use-permissions';
+import roles, { create } from '@/routes/roles';
+import type { Paginator } from '@/types/table';
+import type { Role } from '@/types/role';
+import type { BreadcrumbItem } from '@/types';
 
 interface IndexProps {
     roles: Paginator<Role>;
@@ -17,7 +17,7 @@ interface IndexProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: "Roles",
+        title: 'Roles',
         href: roles.index(),
     },
 ];
@@ -54,7 +54,7 @@ export default function Index({ roles: paginator }: IndexProps) {
                 paginator={paginator}
                 server={{
                     route: roles.index().url,
-                    searchPlaceholder: "Search roles...",
+                    searchPlaceholder: 'Search roles...',
                 }}
             />
         </>

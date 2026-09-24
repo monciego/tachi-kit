@@ -1,12 +1,12 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-} from "@/components/ui/tooltip";
-import type { RoleUser } from "@/types/role";
+} from '@/components/ui/tooltip';
+import type { RoleUser } from '@/types/role';
 
 interface UserAvatarStackProps {
     users?: RoleUser[];
@@ -24,9 +24,9 @@ export function UserAvatarStack({
 
     const getInitials = (name: string) => {
         return name
-            .split(" ")
+            .split(' ')
             .map((n) => n[0])
-            .join("")
+            .join('')
             .toUpperCase()
             .slice(0, 2);
     };
@@ -49,7 +49,7 @@ export function UserAvatarStack({
                     <TooltipProvider key={user.id || index}>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Avatar className="h-8 w-8 border border-foreground/30">
+                                <Avatar className="border-foreground/30 h-8 w-8 border">
                                     <AvatarImage
                                         src={
                                             user.avatar
@@ -75,14 +75,14 @@ export function UserAvatarStack({
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full border bg-muted text-xs font-medium">
+                                <div className="bg-muted flex h-8 w-8 items-center justify-center rounded-full border text-xs font-medium">
                                     +{remainingCount}
                                 </div>
                             </TooltipTrigger>
                             <TooltipContent>
                                 <p className="text-xs">
-                                    {remainingCount} more{" "}
-                                    {remainingCount === 1 ? "user" : "users"}
+                                    {remainingCount} more{' '}
+                                    {remainingCount === 1 ? 'user' : 'users'}
                                 </p>
                             </TooltipContent>
                         </Tooltip>

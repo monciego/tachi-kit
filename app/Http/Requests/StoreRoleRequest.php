@@ -42,5 +42,4 @@ class StoreRoleRequest extends FormRequest
             'permissions.*.exists' => 'One or more selected permissions are invalid.',
         ];
     }
-
 }

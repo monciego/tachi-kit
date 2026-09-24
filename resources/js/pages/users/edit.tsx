@@ -1,27 +1,27 @@
-import { Form, Head, Link, usePage } from "@inertiajs/react";
-import { ArrowLeft, Shield, UserCog } from "lucide-react";
-import { useState } from "react";
+import { Form, Head, Link, usePage } from '@inertiajs/react';
+import { ArrowLeft, Shield, UserCog } from 'lucide-react';
+import { useState } from 'react';
 
-import UserController from "@/actions/App/Http/Controllers/UserController";
-import InputError from "@/components/input-error";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import UserController from '@/actions/App/Http/Controllers/UserController';
+import InputError from '@/components/input-error';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Spinner } from "@/components/ui/spinner";
-import users from "@/routes/users";
-import type { BreadcrumbItem } from "@/types";
-import RolePicker from "./roles-picker";
-import security from "@/routes/security";
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Spinner } from '@/components/ui/spinner';
+import users from '@/routes/users';
+import type { BreadcrumbItem } from '@/types';
+import RolePicker from './roles-picker';
+import security from '@/routes/security';
 
 interface EditUserProps {
     user: {
@@ -36,11 +36,11 @@ interface EditUserProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: "Users",
+        title: 'Users',
         href: users.index(),
     },
     {
-        title: "Edit User",
+        title: 'Edit User',
         href: users.edit(0),
     },
 ];
@@ -67,7 +67,7 @@ export default function EditUser({ user, roles }: EditUserProps) {
                     <CardHeader className="px-4 py-0">
                         <div className="flex items-center gap-3">
                             <div
-                                className={`flex h-10 w-10 items-center justify-center rounded-md ${protectedAccount ? "bg-destructive" : "bg-indigo-600"}`}
+                                className={`flex h-10 w-10 items-center justify-center rounded-md ${protectedAccount ? 'bg-destructive' : 'bg-indigo-600'}`}
                             >
                                 {protectedAccount ? (
                                     <Shield className="h-5 w-5 text-white" />
@@ -86,8 +86,8 @@ export default function EditUser({ user, roles }: EditUserProps) {
                                 </div>
                                 <CardDescription>
                                     {protectedAccount
-                                        ? "This is a protected superadmin account"
-                                        : "Update user information and assigned roles"}
+                                        ? 'This is a protected superadmin account'
+                                        : 'Update user information and assigned roles'}
                                 </CardDescription>
                             </div>
                         </div>
@@ -103,23 +103,23 @@ export default function EditUser({ user, roles }: EditUserProps) {
                                             <span>
                                                 <strong>
                                                     Protected Account:
-                                                </strong>{" "}
+                                                </strong>{' '}
                                                 Superadmin accounts are managed
                                                 through profile settings. To
-                                                update your profile, visit the{" "}
+                                                update your profile, visit the{' '}
                                                 <Link
-                                                    className="text-primary underline whitespace-nowrap"
+                                                    className="text-primary whitespace-nowrap underline"
                                                     href={security.edit()}
                                                 >
                                                     security settings
-                                                </Link>{" "}
+                                                </Link>{' '}
                                                 page.
                                             </span>
                                         ) : (
                                             <span>
                                                 <strong>
                                                     Protected Account:
-                                                </strong>{" "}
+                                                </strong>{' '}
                                                 Superadmin accounts are
                                                 protected.
                                             </span>
@@ -157,7 +157,7 @@ export default function EditUser({ user, roles }: EditUserProps) {
 
                                         <div className="space-y-2 px-4">
                                             <Label htmlFor="name">
-                                                Full Name{" "}
+                                                Full Name{' '}
                                                 <span className="text-destructive">
                                                     *
                                                 </span>
@@ -174,7 +174,7 @@ export default function EditUser({ user, roles }: EditUserProps) {
 
                                         <div className="space-y-2 px-4">
                                             <Label htmlFor="email">
-                                                Email Address{" "}
+                                                Email Address{' '}
                                                 <span className="text-destructive">
                                                     *
                                                 </span>
@@ -204,15 +204,15 @@ export default function EditUser({ user, roles }: EditUserProps) {
                                                 </h3>
                                                 <p className="text-muted-foreground text-xs">
                                                     {protectedAccount
-                                                        ? "Roles cannot be modified"
-                                                        : "Assign one or more roles"}
+                                                        ? 'Roles cannot be modified'
+                                                        : 'Assign one or more roles'}
                                                 </p>
                                             </div>
 
                                             {!protectedAccount &&
                                                 selectedRoles.length > 0 && (
                                                     <Badge variant="secondary">
-                                                        {selectedRoles.length}{" "}
+                                                        {selectedRoles.length}{' '}
                                                         selected
                                                     </Badge>
                                                 )}
@@ -306,9 +306,9 @@ export default function EditUser({ user, roles }: EditUserProps) {
                                                     Updating...
                                                 </>
                                             ) : protectedAccount ? (
-                                                "Protected Account"
+                                                'Protected Account'
                                             ) : (
-                                                "Update User"
+                                                'Update User'
                                             )}
                                         </Button>
                                     </div>

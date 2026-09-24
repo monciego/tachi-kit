@@ -1,14 +1,14 @@
-import { Head, Link, router } from "@inertiajs/react";
+import { Head, Link, router } from '@inertiajs/react';
 
-import { DataTable } from "@/components/data-table";
-import { columns, type User } from "./columns";
-import users from "@/routes/users";
-import { type Paginator } from "@/types/table";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { BreadcrumbItem } from "@/types";
-import { usePermissions } from "@/hooks/use-permissions";
-import { PERMISSIONS } from "@/constants/permissions";
+import { DataTable } from '@/components/data-table';
+import { columns, type User } from './columns';
+import users from '@/routes/users';
+import { type Paginator } from '@/types/table';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import { BreadcrumbItem } from '@/types';
+import { usePermissions } from '@/hooks/use-permissions';
+import { PERMISSIONS } from '@/constants/permissions';
 
 interface IndexProps {
     users: Paginator<User>;
@@ -17,7 +17,7 @@ interface IndexProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: "Users",
+        title: 'Users',
         href: users.index(),
     },
 ];
@@ -54,12 +54,12 @@ export default function Index({ users: paginator, roleOptions }: IndexProps) {
                 enableRowSelection
                 bulkActions={[
                     {
-                        label: "Delete",
-                        noun: "users",
+                        label: 'Delete',
+                        noun: 'users',
                         isProtected: (user) => !user.deletable,
-                        confirmTitle: "Delete selected users",
+                        confirmTitle: 'Delete selected users',
                         confirmDescription:
-                            "This will permanently delete the selected users and remove their access to the app.",
+                            'This will permanently delete the selected users and remove their access to the app.',
                         onConfirm: (selectedUsers) => {
                             router.post(users.bulkDelete().url, {
                                 ids: selectedUsers.map((user) => user.id),
@@ -69,24 +69,24 @@ export default function Index({ users: paginator, roleOptions }: IndexProps) {
                 ]}
                 server={{
                     route: users.index().url,
-                    searchPlaceholder: "Search users...",
+                    searchPlaceholder: 'Search users...',
                     filters: [
                         {
-                            column: "roles",
-                            param: "role",
-                            title: "Role",
+                            column: 'roles',
+                            param: 'role',
+                            title: 'Role',
                             options: roleOptions.map((role) => ({
                                 label: role,
                                 value: role,
                             })),
                         },
                         {
-                            column: "is_active",
-                            param: "status",
-                            title: "Status",
+                            column: 'is_active',
+                            param: 'status',
+                            title: 'Status',
                             options: [
-                                { label: "Active", value: "active" },
-                                { label: "Inactive", value: "inactive" },
+                                { label: 'Active', value: 'active' },
+                                { label: 'Inactive', value: 'inactive' },
                             ],
                         },
                     ],

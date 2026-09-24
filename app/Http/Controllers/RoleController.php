@@ -17,7 +17,7 @@ class RoleController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index(Request $request): Response
+    public function index(Request $request): Response|RedirectResponse
     {
         $this->authorize('viewAny', Role::class);
 

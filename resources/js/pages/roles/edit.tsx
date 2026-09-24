@@ -1,27 +1,27 @@
-import { Form, Head } from "@inertiajs/react";
-import { Link } from "@inertiajs/react";
-import { ArrowLeft, Shield, ShieldAlert } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Form, Head } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
+import { ArrowLeft, Shield, ShieldAlert } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
-import InputError from "@/components/input-error";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import InputError from '@/components/input-error';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { PERMISSION_GROUPS, getPermissionLabel } from "@/constants/permissions";
-import roles, { edit, index, update } from "@/routes/roles";
-import type { PermissionName } from "@/types/permissions";
-import type { Role } from "@/types/role";
-import type { BreadcrumbItem } from "@/types";
+} from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { PERMISSION_GROUPS, getPermissionLabel } from '@/constants/permissions';
+import roles, { index, update } from '@/routes/roles';
+import type { PermissionName } from '@/types/permissions';
+import type { Role } from '@/types/role';
+import type { BreadcrumbItem } from '@/types';
 
 interface Props {
     role: Role;
@@ -30,24 +30,23 @@ interface Props {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: "Roles",
-        href: "/roles",
+        title: 'Roles',
+        href: '/roles',
     },
     {
-        title: "Edit Role",
+        title: 'Edit Role',
         href: roles.edit(0),
     },
 ];
 
 export default function Edit({ role, permissions }: Props) {
-    const isSuperadmin = role.name === "superadmin";
+    const isSuperadmin = role.name === 'superadmin';
     const isSystemRole = role.is_system_role;
 
     const initialPermissions = [...role.permissions];
 
-    const [selectedPermissions, setSelectedPermissions] = useState<
-        PermissionName[]
-    >(initialPermissions);
+    const [selectedPermissions, setSelectedPermissions] =
+        useState<PermissionName[]>(initialPermissions);
     const [selectAll, setSelectAll] = useState(false);
 
     useEffect(() => {
@@ -93,14 +92,14 @@ export default function Edit({ role, permissions }: Props) {
                             <div
                                 className={`flex h-12 w-12 items-center justify-center rounded-lg ${
                                     isSuperadmin
-                                        ? "bg-destructive/10"
-                                        : "bg-primary/10"
+                                        ? 'bg-destructive/10'
+                                        : 'bg-primary/10'
                                 }`}
                             >
                                 {isSuperadmin ? (
-                                    <ShieldAlert className="h-6 w-6 text-destructive" />
+                                    <ShieldAlert className="text-destructive h-6 w-6" />
                                 ) : (
-                                    <Shield className="h-6 w-6 text-primary" />
+                                    <Shield className="text-primary h-6 w-6" />
                                 )}
                             </div>
                             <div className="flex-1">
@@ -119,10 +118,10 @@ export default function Edit({ role, permissions }: Props) {
                                 </div>
                                 <CardDescription>
                                     {isSuperadmin
-                                        ? "This role is protected and cannot be modified"
+                                        ? 'This role is protected and cannot be modified'
                                         : isSystemRole
-                                          ? "Update permissions for this system role"
-                                          : "Update role name and permissions"}
+                                          ? 'Update permissions for this system role'
+                                          : 'Update role name and permissions'}
                                 </CardDescription>
                             </div>
                         </div>
@@ -130,7 +129,7 @@ export default function Edit({ role, permissions }: Props) {
                     <CardContent>
                         {/* Superadmin Warning */}
                         {isSuperadmin && (
-                            <Alert className="mb-6 border-destructive/50 bg-destructive/10">
+                            <Alert className="border-destructive/50 bg-destructive/10 mb-6">
                                 <ShieldAlert className="h-4 w-4" />
                                 <AlertDescription>
                                     <strong>Protected Role:</strong> The
@@ -151,14 +150,14 @@ export default function Edit({ role, permissions }: Props) {
                                     {/* Basic Information */}
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2 border-b pb-2">
-                                            <h3 className="text-sm font-semibold text-foreground">
+                                            <h3 className="text-foreground text-sm font-semibold">
                                                 Basic Information
                                             </h3>
                                         </div>
 
                                         <div className="space-y-2">
                                             <Label htmlFor="name">
-                                                Role Name{" "}
+                                                Role Name{' '}
                                                 <span className="text-destructive">
                                                     *
                                                 </span>
@@ -174,12 +173,12 @@ export default function Edit({ role, permissions }: Props) {
                                                 disabled={isSuperadmin}
                                                 className={
                                                     isSystemRole || isSuperadmin
-                                                        ? "bg-muted"
-                                                        : ""
+                                                        ? 'bg-muted'
+                                                        : ''
                                                 }
                                             />
                                             {isSystemRole && !isSuperadmin && (
-                                                <p className="text-xs text-muted-foreground">
+                                                <p className="text-muted-foreground text-xs">
                                                     System role names cannot be
                                                     changed
                                                 </p>
@@ -192,16 +191,16 @@ export default function Edit({ role, permissions }: Props) {
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between border-b pb-2">
                                             <div>
-                                                <h3 className="text-sm font-semibold text-foreground">
-                                                    Permissions{" "}
+                                                <h3 className="text-foreground text-sm font-semibold">
+                                                    Permissions{' '}
                                                     <span className="text-destructive">
                                                         *
                                                     </span>
                                                 </h3>
-                                                <p className="text-xs text-muted-foreground">
+                                                <p className="text-muted-foreground text-xs">
                                                     {isSuperadmin
-                                                        ? "Permissions are protected"
-                                                        : "Select what this role can do"}
+                                                        ? 'Permissions are protected'
+                                                        : 'Select what this role can do'}
                                                 </p>
                                             </div>
                                             <div className="flex items-center gap-2">
@@ -211,7 +210,7 @@ export default function Edit({ role, permissions }: Props) {
                                                         <Badge variant="secondary">
                                                             {
                                                                 selectedPermissions.length
-                                                            }{" "}
+                                                            }{' '}
                                                             selected
                                                         </Badge>
                                                     )}
@@ -237,8 +236,8 @@ export default function Edit({ role, permissions }: Props) {
                                         <div
                                             className={`space-y-6 rounded-lg border p-4 ${
                                                 isSuperadmin
-                                                    ? "bg-muted/50 opacity-60"
-                                                    : ""
+                                                    ? 'bg-muted/50 opacity-60'
+                                                    : ''
                                             }`}
                                         >
                                             {Object.entries(
@@ -248,8 +247,8 @@ export default function Edit({ role, permissions }: Props) {
                                                     key={group}
                                                     className="space-y-3"
                                                 >
-                                                    <h4 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                                                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                                                    <h4 className="text-foreground flex items-center gap-2 text-sm font-semibold">
+                                                        <div className="bg-primary h-1.5 w-1.5 rounded-full" />
                                                         {group}
                                                     </h4>
                                                     <div className="grid gap-3 sm:grid-cols-2">
@@ -267,8 +266,8 @@ export default function Edit({ role, permissions }: Props) {
                                                                         }
                                                                         className={`flex items-start space-x-3 rounded-md border p-3 transition-colors ${
                                                                             isSelected
-                                                                                ? "border-primary bg-primary/5"
-                                                                                : "border-transparent hover:border-border hover:bg-muted/50"
+                                                                                ? 'border-primary bg-primary/5'
+                                                                                : 'hover:border-border hover:bg-muted/50 border-transparent'
                                                                         }`}
                                                                     >
                                                                         <Checkbox
@@ -298,8 +297,8 @@ export default function Edit({ role, permissions }: Props) {
                                                                             }
                                                                             className={`flex-1 text-sm leading-none font-medium ${
                                                                                 isSuperadmin
-                                                                                    ? "cursor-not-allowed"
-                                                                                    : "cursor-pointer"
+                                                                                    ? 'cursor-not-allowed'
+                                                                                    : 'cursor-pointer'
                                                                             }`}
                                                                         >
                                                                             {getPermissionLabel(
@@ -342,10 +341,10 @@ export default function Edit({ role, permissions }: Props) {
                                             }
                                         >
                                             {processing
-                                                ? "Updating..."
+                                                ? 'Updating...'
                                                 : isSuperadmin
-                                                  ? "Protected Role"
-                                                  : "Update Role"}
+                                                  ? 'Protected Role'
+                                                  : 'Update Role'}
                                         </Button>
                                     </div>
                                 </>
