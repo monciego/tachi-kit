@@ -1,11 +1,15 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/react-starter-kit",
+    "name": "monciego/tachi-kit",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Cut through boilerplate. An opinionated Laravel, React and Inertia starter kit with authentication, role-based permissions and user management.",
     "keywords": [
         "laravel",
-        "framework"
+        "react",
+        "inertia",
+        "starter-kit",
+        "permissions",
+        "shadcn"
     ],
     "license": "MIT",
     "require": {

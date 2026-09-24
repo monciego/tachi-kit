@@ -39,3 +39,12 @@ test('seeder can be re-run without creating duplicate records', function () {
     expect(User::count())->toBe(54)
         ->and(Role::count())->toBe(3);
 });
+
+test('seeder only seeds roles and permissions in production', function () {
+    app()->detectEnvironment(fn () => 'production');
+
+    $this->artisan('db:seed', ['--force' => true])->assertSuccessful();
+
+    expect(Role::count())->toBe(3)
+        ->and(User::count())->toBe(0);
+});
