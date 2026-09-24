@@ -99,7 +99,7 @@ class DashboardController extends Controller
     /**
      * The most recently created users.
      *
-     * @return array<int, array{id: int, name: string, email: string, roles: array<int, string>, is_active: bool, created_at: string|null}>
+     * @return array<int, array{id: int, name: string, email: string, avatar: string|null, roles: array<int, string>, is_active: bool, created_at: string|null}>
      */
     private function recentUsers(User $viewer): array
     {
@@ -114,6 +114,7 @@ class DashboardController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'avatar' => $user->avatar,
                 'roles' => $user->roles->map(fn (Role $role): string => $role->name)->all(),
                 'is_active' => $user->is_active,
                 'created_at' => $user->created_at?->toIso8601String(),

@@ -73,6 +73,7 @@ class UserController extends Controller
             'user_code' => $user->user_code,
             'name' => $user->name,
             'email' => $user->email,
+            'avatar' => $user->avatar,
             'roles' => $user->roles->pluck('name')->all(),
             'created_at' => $user->created_at?->toIso8601String(),
             'is_active' => (bool) $user->is_active,

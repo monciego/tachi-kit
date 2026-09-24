@@ -19,4 +19,20 @@ return [
         'public' => env('ALLOWS_PUBLIC_REGISTRATION', false),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Avatars
+    |--------------------------------------------------------------------------
+    |
+    | Profile pictures are stored on this filesystem disk. The disk must be
+    | publicly reachable (run `php artisan storage:link` for the "public"
+    | disk), or use a cloud disk such as "s3" in production.
+    |
+    */
+
+    'avatars' => [
+        'disk' => env('AVATAR_DISK', 'public'),
+        'max_kilobytes' => 2048,
+    ],
+
 ];

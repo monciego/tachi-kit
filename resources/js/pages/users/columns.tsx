@@ -29,7 +29,7 @@ export interface User {
     user_code: string;
     name: string;
     email: string;
-    avatar?: string;
+    avatar: string | null;
     roles: string[];
     created_at: string;
     is_active: boolean;
@@ -48,7 +48,7 @@ function UserNameCell({ user }: { user: User }) {
             <Avatar className="h-8 w-8">
                 <AvatarImage
                     className="object-cover"
-                    src={user.avatar ? `/storage/${user.avatar}` : undefined}
+                    src={user.avatar ?? undefined}
                     alt={user.name}
                 />
                 <AvatarFallback className="text-xs">

@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { ArrowRight } from 'lucide-react';
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -74,6 +74,13 @@ export function RecentUsersTable({
                                     <TableCell>
                                         <div className="flex items-center gap-2">
                                             <Avatar className="size-8">
+                                                <AvatarImage
+                                                    className="object-cover"
+                                                    src={
+                                                        user.avatar ?? undefined
+                                                    }
+                                                    alt={user.name}
+                                                />
                                                 <AvatarFallback className="text-xs">
                                                     {getInitials(user.name)}
                                                 </AvatarFallback>

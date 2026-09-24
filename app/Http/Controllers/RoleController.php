@@ -29,7 +29,7 @@ class RoleController extends Controller
         $roles = Role::with([
             'permissions',
             'users' => function ($query) {
-                $query->select('users.id', 'users.name', 'users.email')
+                $query->select('users.id', 'users.name', 'users.email', 'users.avatar_path')
                     ->limit(5);
             },
         ])

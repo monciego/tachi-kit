@@ -51,11 +51,7 @@ export function UserAvatarStack({
                             <TooltipTrigger asChild>
                                 <Avatar className="border-foreground/30 h-8 w-8 border">
                                     <AvatarImage
-                                        src={
-                                            user.avatar
-                                                ? `/storage/${user.avatar}`
-                                                : undefined
-                                        }
+                                        src={user.avatar ?? undefined}
                                         alt={user.name}
                                     />
                                     <AvatarFallback className="text-xs">
