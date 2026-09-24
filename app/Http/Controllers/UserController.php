@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Permission;
+use App\Enums\RoleName;
+use App\Http\Requests\DataTableRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Role;
@@ -21,44 +23,20 @@ class UserController extends Controller
     /**
      * List users with server-side search, filtering, sorting and pagination.
      */
-    public function index(Request $request): Response|RedirectResponse
+    public function index(DataTableRequest $request): Response|RedirectResponse
     {
         $this->authorize('viewAny', User::class);
 
-        $perPage = (int) $request->query('per_page', 10);
-
-        if (! in_array($perPage, [10, 20, 50, 100], true)) {
-            $perPage = 10;
-        }
-
-        $sorting = in_array($request->query('sort'), ['id', 'name', 'email', 'created_at'], true)
-            ? $request->query('sort')
-            : 'created_at';
-
-        $direction = $request->query('direction') === 'asc' ? 'asc' : 'desc';
-
-        $search = trim((string) $request->query('search', ''));
-
-        $roles = collect(explode(',', (string) $request->query('role', '')))
-            ->map(fn (string $role) => trim($role))
-            ->filter()
-            ->unique()
-            ->values();
-
-        $statuses = collect(explode(',', (string) $request->query('status', '')))
-            ->map(fn (string $status) => trim($status))
-            ->filter()
-            ->unique()
-            ->values();
+        $search = $request->search();
+        $roles = $request->filter('role');
+        $statuses = $request->filter('status');
 
         $wantsActive = $statuses->contains('active');
         $wantsInactive = $statuses->contains('inactive');
 
         $users = User::query()
             ->with('roles')
-            ->when(! $request->user()->hasRole('superadmin'), function ($query) {
-                $query->whereDoesntHave('roles', fn ($role) => $role->where('name', 'superadmin'));
-            })
+            ->visibleTo($request->user())
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($sub) use ($search) {
                     $sub->where('name', 'like', "%{$search}%")
@@ -80,13 +58,13 @@ class UserController extends Controller
                       AND model_has_roles.model_type = ?
                       AND roles.name = ?
                 ) THEN 1 ELSE 2 END',
-                [$request->user()->id, $request->user()->getMorphClass(), 'superadmin'],
+                [$request->user()->id, $request->user()->getMorphClass(), RoleName::Superadmin->value],
             )
-            ->orderBy($sorting, $direction)
-            ->paginate($perPage)
+            ->orderBy($request->sortColumn(['id', 'name', 'email', 'created_at'], 'created_at'), $request->sortDirection())
+            ->paginate($request->perPage())
             ->withQueryString();
 
-        if ($users->total() > 0 && (int) $request->query('page', 1) > $users->lastPage()) {
+        if ($request->isPastLastPage($users)) {
             return to_route('users.index', $request->except('page'));
         }
 
@@ -98,7 +76,7 @@ class UserController extends Controller
             'roles' => $user->roles->pluck('name')->all(),
             'created_at' => $user->created_at?->toIso8601String(),
             'is_active' => (bool) $user->is_active,
-            'deletable' => $user->id !== $request->user()->id && ! $user->hasRole('superadmin'),
+            'deletable' => $user->id !== $request->user()->id && ! $user->isSuperadmin(),
         ]);
 
         return Inertia::render('users/index', [
@@ -157,7 +135,7 @@ class UserController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'roles' => $user->getRoleNames()->sort()->values()->all(),
-                'is_superadmin' => $user->hasRole('superadmin'),
+                'is_superadmin' => $user->isSuperadmin(),
             ],
             'roles' => $this->availableRoleNames(),
         ]);
@@ -232,7 +210,7 @@ class UserController extends Controller
      */
     public function bulkDestroy(Request $request): RedirectResponse
     {
-        abort_unless($request->user()->hasPermissionTo(Permission::UsersDelete->value), 403);
+        abort_unless($request->user()->checkPermissionTo(Permission::UsersDelete->value), 403);
 
         $ids = $request->validate([
             'ids' => ['required', 'array', 'min:1'],
@@ -242,7 +220,7 @@ class UserController extends Controller
         $ids = User::query()
             ->whereIn('id', $ids)
             ->where('id', '!=', $request->user()->id)
-            ->whereDoesntHave('roles', fn ($role) => $role->where('name', 'superadmin'))
+            ->whereDoesntHave('roles', fn ($role) => $role->where('name', RoleName::Superadmin->value))
             ->pluck('id')
             ->all();
 
@@ -269,8 +247,8 @@ class UserController extends Controller
         $user = Auth::user();
 
         return Role::query()
-            ->when(! $user?->hasRole('superadmin'), fn ($query) => $query->where('name', '!=', 'superadmin'))
-            ->orderByRaw("CASE WHEN name = 'superadmin' THEN 0 WHEN name = 'admin' THEN 1 WHEN name = 'user' THEN 2 ELSE 3 END")
+            ->when(! $user?->isSuperadmin(), fn ($query) => $query->where('name', '!=', RoleName::Superadmin->value))
+            ->systemRolesFirst()
             ->orderBy('name')
             ->pluck('name')
             ->all();

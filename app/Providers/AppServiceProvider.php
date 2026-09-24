@@ -35,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
         // superadmin cannot demote themselves, change their own / another
         // superadmin's account status, or delete a system or in-use role.
         Gate::before(function (User $user, string $ability, array $arguments) {
-            if ($user->hasRole('superadmin')) {
+            if ($user->isSuperadmin()) {
                 if ($ability === 'updateStatus') {
                     return null;
                 }

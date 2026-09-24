@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\Permission as PermissionEnum;
+use App\Enums\RoleName;
 use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
@@ -24,10 +25,10 @@ class RolePermissionSeeder extends Seeder
 
         $registrar->forgetCachedPermissions();
 
-        $superadmin = Role::query()->firstOrCreate(['name' => 'superadmin']);
+        $superadmin = Role::query()->firstOrCreate(['name' => RoleName::Superadmin->value]);
         $superadmin->givePermissionTo(PermissionEnum::values());
 
-        $admin = Role::query()->firstOrCreate(['name' => 'admin']);
+        $admin = Role::query()->firstOrCreate(['name' => RoleName::Admin->value]);
         $admin->givePermissionTo([
             PermissionEnum::UsersView->value,
             PermissionEnum::UsersCreate->value,
@@ -36,6 +37,6 @@ class RolePermissionSeeder extends Seeder
             PermissionEnum::UsersStatus->value,
         ]);
 
-        Role::query()->firstOrCreate(['name' => 'user']);
+        Role::query()->firstOrCreate(['name' => RoleName::User->value]);
     }
 }

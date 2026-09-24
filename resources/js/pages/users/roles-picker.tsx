@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { getRoleBadgeVariant, getRoleColor } from '@/utils/role-color';
+import { ROLES } from '@/constants/roles';
 
 interface RolePickerProps {
     roles: string[];
@@ -13,7 +14,7 @@ interface RolePickerProps {
     disabled?: boolean;
 }
 
-const SUPERADMIN_ROLE = 'superadmin';
+const SUPERADMIN_ROLE: string = ROLES.SUPERADMIN;
 
 export default function RolePicker({
     roles,

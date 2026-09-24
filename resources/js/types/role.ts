@@ -1,6 +1,6 @@
 import type { PermissionName } from './permissions';
 
-export type SystemRoleName = 'superadmin' | 'admin' | 'user';
+export type { SystemRoleName } from '@/constants/access.generated';
 
 export type RoleMeta = {
     id: number;

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Concerns\PasswordValidationRules;
+use App\Enums\RoleName;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -15,7 +16,7 @@ class StoreUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return (bool) $this->user()?->hasAnyRole(['superadmin', 'admin']);
+        return (bool) $this->user()?->hasAnyRole([RoleName::Superadmin, RoleName::Admin]);
     }
 
     /**
@@ -36,7 +37,7 @@ class StoreUserRequest extends FormRequest
                 'distinct',
                 'exists:roles,name',
                 function ($attribute, $value, $fail) {
-                    if ($value === 'superadmin' && ! $this->user()->hasRole('superadmin')) {
+                    if ($value === RoleName::Superadmin->value && ! $this->user()->isSuperadmin()) {
                         $fail('You cannot assign the superadmin role.');
                     }
                 },

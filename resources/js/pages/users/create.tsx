@@ -26,6 +26,7 @@ import {
 import users from '@/routes/users';
 import type { BreadcrumbItem } from '@/types';
 import RolePicker from './roles-picker';
+import { ROLES } from '@/constants/roles';
 
 interface CreateUserProps {
     roles: string[];
@@ -45,7 +46,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Create({ roles }: CreateUserProps) {
     const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
 
-    const hasSuperAdmin = selectedRoles.includes('superadmin');
+    const hasSuperAdmin = selectedRoles.includes(ROLES.SUPERADMIN);
 
     return (
         <>

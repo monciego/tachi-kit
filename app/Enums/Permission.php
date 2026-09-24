@@ -43,6 +43,15 @@ enum Permission: string
     }
 
     /**
+     * The group this permission is listed under, taken from its prefix
+     * (e.g. "users.view" belongs to "Users").
+     */
+    public function group(): string
+    {
+        return ucfirst(strstr($this->value, '.', true) ?: $this->value);
+    }
+
+    /**
      * Every permission as a flat list of DB values.
      *
      * @return list<string>

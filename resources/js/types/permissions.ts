@@ -1,15 +1,12 @@
-export type PermissionName =
-    | 'users.view'
-    | 'users.create'
-    | 'users.edit'
-    | 'users.delete'
-    | 'users.status'
-    | 'roles.view'
-    | 'roles.create'
-    | 'roles.edit'
-    | 'roles.delete';
+import type {
+    PermissionGroupName,
+    PermissionName,
+} from '@/constants/access.generated';
 
-export type PermissionGroupName = 'Users' | 'Roles';
+export type {
+    PermissionGroupName,
+    PermissionName,
+} from '@/constants/access.generated';
 
 export type PermissionsMap = Record<PermissionName, boolean>;
 

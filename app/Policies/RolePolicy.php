@@ -10,17 +10,17 @@ class RolePolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo(Permission::RolesView->value);
+        return $user->checkPermissionTo(Permission::RolesView->value);
     }
 
     public function view(User $user, Role $role): bool
     {
-        return $user->hasPermissionTo(Permission::RolesView->value);
+        return $user->checkPermissionTo(Permission::RolesView->value);
     }
 
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo(Permission::RolesCreate->value);
+        return $user->checkPermissionTo(Permission::RolesCreate->value);
     }
 
     public function update(User $user, Role $role): bool
@@ -29,7 +29,7 @@ class RolePolicy
             return false;
         }
 
-        return $user->hasPermissionTo(Permission::RolesEdit->value);
+        return $user->checkPermissionTo(Permission::RolesEdit->value);
     }
 
     public function delete(User $user, Role $role): bool
@@ -42,16 +42,16 @@ class RolePolicy
             return false;
         }
 
-        return $user->hasPermissionTo(Permission::RolesDelete->value);
+        return $user->checkPermissionTo(Permission::RolesDelete->value);
     }
 
     public function restore(User $user, Role $role): bool
     {
-        return $user->hasPermissionTo(Permission::RolesDelete->value);
+        return $user->checkPermissionTo(Permission::RolesDelete->value);
     }
 
     public function forceDelete(User $user, Role $role): bool
     {
-        return $user->hasPermissionTo(Permission::RolesDelete->value);
+        return $user->checkPermissionTo(Permission::RolesDelete->value);
     }
 }

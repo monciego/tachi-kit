@@ -25,14 +25,11 @@ export function usePermissions() {
         return auth.roles?.some((role) => role.name === roleName) ?? false;
     };
 
-    const isTalent = (): boolean => hasRole('talent');
-
     return {
         can,
         canAny,
         canAll,
         cannot,
         hasRole,
-        isTalent,
     };
 }

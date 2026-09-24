@@ -4,9 +4,12 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Concerns\GeneratesUserCode;
+use App\Enums\RoleName;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -54,5 +57,29 @@ class User extends Authenticatable implements PasskeyUser
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Determine if the user holds the superadmin role.
+     */
+    public function isSuperadmin(): bool
+    {
+        return $this->hasRole(RoleName::Superadmin);
+    }
+
+    /**
+     * Limit the query to users the given viewer is allowed to see.
+     * Superadmin accounts are hidden from everyone except other superadmins.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[Scope]
+    protected function visibleTo(Builder $query, User $viewer): void
+    {
+        if ($viewer->isSuperadmin()) {
+            return;
+        }
+
+        $query->whereDoesntHave('roles', fn (Builder $role) => $role->where('name', RoleName::Superadmin->value));
     }
 }

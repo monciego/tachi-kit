@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\RoleName;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -41,10 +42,10 @@ class UserFactory extends Factory
     /**
      * Indicate that the user should be assigned the given role.
      */
-    public function withRole(string $role): static
+    public function withRole(RoleName|string $role): static
     {
         return $this->afterCreating(function (User $user) use ($role) {
-            $user->assignRole(Role::firstOrCreate(['name' => $role]));
+            $user->assignRole(Role::firstOrCreate(['name' => $role instanceof RoleName ? $role->value : $role]));
         });
     }
 
@@ -53,7 +54,7 @@ class UserFactory extends Factory
      */
     public function asAdmin(): static
     {
-        return $this->withRole('admin');
+        return $this->withRole(RoleName::Admin);
     }
 
     /**
@@ -61,7 +62,7 @@ class UserFactory extends Factory
      */
     public function asSuperadmin(): static
     {
-        return $this->withRole('superadmin');
+        return $this->withRole(RoleName::Superadmin);
     }
 
     /**
@@ -69,7 +70,7 @@ class UserFactory extends Factory
      */
     public function asUser(): static
     {
-        return $this->withRole('user');
+        return $this->withRole(RoleName::User);
     }
 
     /**

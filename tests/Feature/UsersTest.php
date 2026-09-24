@@ -40,9 +40,9 @@ test('lists users with server-side pagination and roles', function () {
             ->where('users.data.0.roles', ['admin'])
             ->where('users.data.1.roles', ['user'])
             ->has('roleOptions', 2)
-            ->has('roles', 1)
-            ->where('roles.0.name', 'admin')
-            ->where('roles.0.is_system_role', true)
+            ->has('auth.roles', 1)
+            ->where('auth.roles.0.name', 'admin')
+            ->where('auth.roles.0.is_system_role', true)
         );
 });
 

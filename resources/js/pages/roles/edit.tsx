@@ -22,6 +22,7 @@ import roles, { index, update } from '@/routes/roles';
 import type { PermissionName } from '@/types/permissions';
 import type { Role } from '@/types/role';
 import type { BreadcrumbItem } from '@/types';
+import { ROLES } from '@/constants/roles';
 
 interface Props {
     role: Role;
@@ -40,7 +41,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Edit({ role, permissions }: Props) {
-    const isSuperadmin = role.name === 'superadmin';
+    const isSuperadmin = role.name === ROLES.SUPERADMIN;
     const isSystemRole = role.is_system_role;
 
     const initialPermissions = [...role.permissions];

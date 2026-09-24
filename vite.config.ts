@@ -71,6 +71,7 @@ export default defineConfig({
             'CLAUDE.md',
             'boost.json',
             'composer.json',
+            'resources/js/constants/access.generated.ts',
             'resources/js/components/ui/*',
             'resources/views/mail/*',
         ],

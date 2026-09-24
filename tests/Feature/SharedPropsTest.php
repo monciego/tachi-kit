@@ -27,7 +27,7 @@ test('authenticated users receive their role names', function () {
 
     expect($props['auth']['roles'])->toHaveCount(1)
         ->and($props['auth']['roles'][0]['name'])->toBe('user')
-        ->and($props['roles'])->toBe($props['auth']['roles']);
+        ->and($props)->not->toHaveKey('roles');
 });
 
 test('can map reflects the users permissions', function () {

@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Permission;
+use App\Http\Requests\DataTableRequest;
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
 use App\Http\Resources\RoleResource;
 use App\Models\Role;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,23 +17,14 @@ class RoleController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index(Request $request): Response|RedirectResponse
+    /**
+     * List roles with server-side search, sorting and pagination.
+     */
+    public function index(DataTableRequest $request): Response|RedirectResponse
     {
         $this->authorize('viewAny', Role::class);
 
-        $perPage = (int) $request->query('per_page', 10);
-
-        if (! in_array($perPage, [10, 20, 50, 100], true)) {
-            $perPage = 10;
-        }
-
-        $sorting = in_array($request->query('sort'), ['id', 'name'], true)
-            ? $request->query('sort')
-            : 'created_at';
-
-        $direction = $request->query('direction') === 'asc' ? 'asc' : 'desc';
-
-        $search = trim((string) $request->query('search', ''));
+        $search = $request->search();
 
         $roles = Role::with([
             'permissions',
@@ -48,17 +39,12 @@ class RoleController extends Controller
                 });
             })
             ->withCount('users')
-            ->orderByRaw('CASE
-                WHEN name = "superadmin" THEN 1
-                WHEN name = "admin" THEN 2
-                WHEN name = "user" THEN 3
-                ELSE 6
-            END')
-            ->orderBy($sorting, $direction)
-            ->paginate($perPage)
+            ->systemRolesFirst()
+            ->orderBy($request->sortColumn(['id', 'name'], 'created_at'), $request->sortDirection())
+            ->paginate($request->perPage())
             ->withQueryString();
 
-        if ($roles->total() > 0 && (int) $request->query('page', 1) > $roles->lastPage()) {
+        if ($request->isPastLastPage($roles)) {
             return to_route('roles.index', $request->except('page'));
         }
 
@@ -85,6 +71,11 @@ class RoleController extends Controller
         $role = Role::create(['name' => $data['name']]);
         $role->givePermissionTo($data['permissions']);
 
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => __('Role :name created.', ['name' => $role->name]),
+        ]);
+
         return to_route('roles.index');
     }
 
@@ -107,6 +98,11 @@ class RoleController extends Controller
         $role->update(['name' => $data['name']]);
         $role->syncPermissions($data['permissions']);
 
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => __('Role :name updated.', ['name' => $role->name]),
+        ]);
+
         return to_route('roles.index');
     }
 
@@ -115,6 +111,8 @@ class RoleController extends Controller
         $this->authorize('delete', $role);
 
         $role->delete();
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Role deleted.')]);
 
         return to_route('roles.index');
     }

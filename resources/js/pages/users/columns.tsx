@@ -3,11 +3,11 @@ import { Link, router, usePage } from '@inertiajs/react';
 import { createColumnHelper } from '@tanstack/react-table';
 import { MoreHorizontal, Pencil, Trash2, UserCheck, UserX } from 'lucide-react';
 import { useInitials } from '@/hooks/use-initials';
-import { cn } from 'cn';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DeleteDialog } from '@/components/delete-dialog';
+import { UserStatusBadge } from '@/components/user-status-badge';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,6 +22,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getRoleBadgeVariant, getRoleColor } from '@/utils/role-color';
 import { PERMISSIONS } from '@/constants/permissions';
 import { usePermissions } from '@/hooks/use-permissions';
+import { ROLES } from '@/constants/roles';
 
 export interface User {
     id: number;
@@ -64,22 +65,6 @@ function UserNameCell({ user }: { user: User }) {
                 </Badge>
             )}
         </div>
-    );
-}
-
-function StatusBadge({ active }: { active: boolean }) {
-    return (
-        <Badge
-            variant="outline"
-            className={cn(
-                'shrink-0 rounded-full border-transparent font-normal',
-                active
-                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
-                    : 'bg-slate-100 text-slate-500 dark:bg-slate-900 dark:text-slate-400',
-            )}
-        >
-            {active ? 'Active' : 'Inactive'}
-        </Badge>
     );
 }
 
@@ -165,7 +150,7 @@ export const columns = columnHelper.columns([
         header: 'Status',
         enableSorting: false,
         cell: ({ row }) => (
-            <StatusBadge active={row.getValue<boolean>('is_active')} />
+            <UserStatusBadge active={row.getValue<boolean>('is_active')} />
         ),
     }),
     columnHelper.display({
@@ -181,7 +166,7 @@ function UserRowActions({ user }: { user: User }) {
 
     const canChangeStatus =
         user.id !== auth.user.id &&
-        !user.roles.includes('superadmin') &&
+        !user.roles.includes(ROLES.SUPERADMIN) &&
         can(PERMISSIONS.USERS_STATUS);
     const canDelete = user.deletable;
 

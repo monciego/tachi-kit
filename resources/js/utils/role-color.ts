@@ -1,3 +1,5 @@
+import type { SystemRoleName } from '@/types/role';
+
 type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline';
 
 interface RoleBadgeStyle {
@@ -21,7 +23,7 @@ const FIXED_ROLE_STYLES: Record<string, RoleBadgeStyle> = {
         className:
             'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-800/40 dark:text-blue-300 dark:border-blue-700 font-normal',
     },
-};
+} satisfies Record<SystemRoleName, RoleBadgeStyle>;
 
 const CUSTOM_ROLE_COLORS = [
     'bg-teal-100 text-teal-700 border-teal-200 dark:bg-teal-800/40 dark:text-teal-300 dark:border-teal-700',
