@@ -4,6 +4,7 @@ namespace App\Actions\Fortify;
 
 use App\Concerns\PasswordValidationRules;
 use App\Concerns\ProfileValidationRules;
+use App\Enums\ActivityEvent;
 use App\Enums\RoleName;
 use App\Models\Role;
 use App\Models\User;
@@ -33,6 +34,8 @@ class CreateNewUser implements CreatesNewUsers
         ]);
 
         $user->assignRole(Role::query()->firstOrCreate(['name' => RoleName::User->value]));
+
+        ActivityEvent::UserCreated->log($user, causer: $user);
 
         return $user;
     }

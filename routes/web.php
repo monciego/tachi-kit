@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -14,6 +15,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('users/{user}/status', [UserController::class, 'updateStatus'])->name('users.update-status');
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleController::class);
+
+    Route::get('activity', [ActivityController::class, 'index'])->name('activity.index');
 });
 
 require __DIR__.'/settings.php';

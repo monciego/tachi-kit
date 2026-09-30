@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Role;
 use App\Models\User;
+use App\Policies\ActivityPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
 use Carbon\CarbonImmutable;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Spatie\Activitylog\Models\Activity;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(Role::class, RolePolicy::class);
+        Gate::policy(Activity::class, ActivityPolicy::class);
         // Superadmin bypasses all authorization checks, except self-update,
         // updateStatus and role deletion. There the policies still apply so a
         // superadmin cannot demote themselves, change their own / another

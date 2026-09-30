@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Enums\ActivityEvent;
 use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -62,6 +63,11 @@ class FortifyServiceProvider extends ServiceProvider
             }
 
             if (! $user->is_active) {
+                ActivityEvent::LoginFailed->log(
+                    properties: ['email' => $user->email, 'reason' => 'inactive'],
+                    causer: $user,
+                );
+
                 throw ValidationException::withMessages([
                     Fortify::username() => __('Your account is inactive. Please contact an administrator.'),
                 ]);

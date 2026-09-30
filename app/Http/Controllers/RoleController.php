@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ActivityEvent;
 use App\Enums\Permission;
 use App\Http\Requests\DataTableRequest;
 use App\Http\Requests\StoreRoleRequest;
@@ -95,8 +96,18 @@ class RoleController extends Controller
     {
         $data = $request->validated();
 
+        $previousPermissions = $role->permissions->pluck('name');
+
         $role->update(['name' => $data['name']]);
         $role->syncPermissions($data['permissions']);
+
+        $currentPermissions = $role->load('permissions')->permissions->pluck('name');
+        $added = $currentPermissions->diff($previousPermissions)->values()->all();
+        $removed = $previousPermissions->diff($currentPermissions)->values()->all();
+
+        if ($added !== [] || $removed !== []) {
+            ActivityEvent::PermissionsChanged->log($role, ['added' => $added, 'removed' => $removed]);
+        }
 
         Inertia::flash('toast', [
             'type' => 'success',

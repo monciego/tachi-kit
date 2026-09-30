@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Settings;
 
+use App\Enums\ActivityEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\PasswordUpdateRequest;
 use App\Http\Requests\Settings\TwoFactorAuthenticationRequest;
@@ -58,6 +59,8 @@ class SecurityController extends Controller
         $request->user()->update([
             'password' => $request->password,
         ]);
+
+        ActivityEvent::PasswordChanged->log($request->user());
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Password updated.')]);
 

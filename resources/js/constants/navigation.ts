@@ -1,7 +1,15 @@
-import { BookOpen, FolderGit2, LayoutGrid, Shield, Users } from 'lucide-react';
+import {
+    BookOpen,
+    FolderGit2,
+    History,
+    LayoutGrid,
+    Shield,
+    Users,
+} from 'lucide-react';
 
 import { PERMISSIONS } from '@/constants/permissions';
 import { dashboard } from '@/routes';
+import activity from '@/routes/activity';
 import roles from '@/routes/roles';
 import users from '@/routes/users';
 import type { NavItem } from '@/types';
@@ -26,6 +34,15 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
         icon: LayoutGrid,
         description: 'Overview of your day and progress',
         category: 'Platform',
+    },
+    {
+        id: 'activity',
+        title: 'Activity log',
+        href: activity.index(),
+        icon: History,
+        permission: PERMISSIONS.ACTIVITY_VIEW,
+        description: 'Review user, role and sign-in activity',
+        category: 'Access Control',
     },
 ];
 

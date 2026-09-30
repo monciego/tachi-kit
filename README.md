@@ -12,6 +12,7 @@ It is built on top of the official [Laravel React starter kit](https://github.co
 - **Roles & permissions**: [spatie/laravel-permission](https://spatie.be/docs/laravel-permission) with built-in `superadmin`, `admin` and `user` roles, custom roles, and policies that protect superadmins from being edited, deactivated or deleted.
 - **User management**: server-driven data tables with search, faceted filters, sorting, pagination, bulk delete and account status.
 - **Dashboard**: stat cards, a monthly sign-ups chart and a recent users table, loaded as deferred props.
+- **Activity log**: a searchable audit trail of user changes, role and permission changes, password changes, and sign-ins, sign-outs and failed sign-ins ([spatie/laravel-activitylog](https://spatie.be/docs/laravel-activitylog)). Visible to roles with the `activity.view` permission (superadmins by default); entries older than 365 days are pruned daily by the scheduler.
 - **Profile settings**: name, email, avatar upload, password, 2FA, passkeys and appearance (light/dark/system).
 - **Typed end to end**: [Wayfinder](https://github.com/laravel/wayfinder) route helpers, TypeScript role and permission constants generated from PHP enums, and PHPStan at level 7.
 - **Quality gates**: Pest, Pint, PHPStan, oxlint, formatting and `tsc`, all run in GitHub Actions.
@@ -97,6 +98,8 @@ Kit-level settings live in `config/tachi.php`.
 | `superadmin` | Everything. Hidden from non-superadmins, can't be deleted or deactivated, and can't be combined with other roles. |
 | `admin`      | Manage users (view, create, edit, delete, change status).                                                         |
 | `user`       | Default role for new sign-ups. No management access.                                                              |
+
+Only superadmins can view the activity log by default. Grant `activity.view` to another role from the Roles page to share it; superadmin activity stays hidden from non-superadmins.
 
 System roles can't be renamed or deleted. Custom roles can be created from the Roles page.
 

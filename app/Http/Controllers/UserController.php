@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ActivityEvent;
 use App\Enums\Permission;
 use App\Enums\RoleName;
 use App\Http\Requests\DataTableRequest;
@@ -115,6 +116,12 @@ class UserController extends Controller
 
         $user->assignRole($data['roles']);
 
+        ActivityEvent::UserCreated->log($user);
+
+        foreach ($user->getRoleNames() as $role) {
+            ActivityEvent::RoleAssigned->log($user, ['role' => $role]);
+        }
+
         Inertia::flash('toast', [
             'type' => 'success',
             'message' => __('User :name created.', ['name' => $user->name]),
@@ -160,8 +167,30 @@ class UserController extends Controller
             $attributes['password'] = $data['password'];
         }
 
-        $user->update($attributes);
+        $user->fill($attributes);
+        $changedFields = array_keys(array_intersect_key($user->getDirty(), array_flip(['name', 'email'])));
+        $passwordChanged = $user->isDirty('password');
+        $user->save();
+
+        $previousRoles = $user->getRoleNames();
         $user->syncRoles($data['roles']);
+        $currentRoles = $user->load('roles')->getRoleNames();
+
+        if ($changedFields !== []) {
+            ActivityEvent::UserUpdated->log($user, ['changed' => $changedFields]);
+        }
+
+        if ($passwordChanged) {
+            ActivityEvent::PasswordChanged->log($user);
+        }
+
+        foreach ($currentRoles->diff($previousRoles) as $role) {
+            ActivityEvent::RoleAssigned->log($user, ['role' => $role]);
+        }
+
+        foreach ($previousRoles->diff($currentRoles) as $role) {
+            ActivityEvent::RoleRemoved->log($user, ['role' => $role]);
+        }
 
         Inertia::flash('toast', [
             'type' => 'success',
@@ -177,6 +206,8 @@ class UserController extends Controller
     public function destroy(Request $request, User $user): RedirectResponse
     {
         $this->authorize('delete', $user);
+
+        ActivityEvent::UserDeleted->log($user);
 
         $user->delete();
 
@@ -196,7 +227,11 @@ class UserController extends Controller
 
         $this->authorize('updateStatus', [$user, $request]);
 
-        $user->update(['is_active' => $isActive]);
+        if ($user->is_active !== $isActive) {
+            $user->update(['is_active' => $isActive]);
+
+            ($isActive ? ActivityEvent::UserActivated : ActivityEvent::UserDeactivated)->log($user);
+        }
 
         Inertia::flash('toast', [
             'type' => 'success',
@@ -218,14 +253,17 @@ class UserController extends Controller
             'ids.*' => ['integer', 'distinct', 'exists:users,id'],
         ])['ids'];
 
-        $ids = User::query()
+        $users = User::query()
             ->whereIn('id', $ids)
             ->where('id', '!=', $request->user()->id)
             ->whereDoesntHave('roles', fn ($role) => $role->where('name', RoleName::Superadmin->value))
-            ->pluck('id')
-            ->all();
+            ->get();
 
-        $deleted = User::query()->whereIn('id', $ids)->delete();
+        foreach ($users as $user) {
+            ActivityEvent::UserDeleted->log($user);
+        }
+
+        $deleted = User::query()->whereKey($users->modelKeys())->delete();
 
         Inertia::flash('toast', [
             'type' => 'success',

@@ -1,3 +1,4 @@
+export type * from './activity';
 export type * from './auth';
 export type * from './dashboard';
 export type * from './navigation';

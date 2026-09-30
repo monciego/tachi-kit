@@ -24,6 +24,9 @@ enum Permission: string
 
     case RolesDelete = 'roles.delete';
 
+    // Activity
+    case ActivityView = 'activity.view';
+
     /**
      * Human-readable label for this permission.
      */
@@ -39,6 +42,7 @@ enum Permission: string
             self::RolesCreate => 'Create Roles',
             self::RolesEdit => 'Edit Roles',
             self::RolesDelete => 'Delete Roles',
+            self::ActivityView => 'View Activity Log',
         };
     }
 

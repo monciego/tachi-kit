@@ -19,6 +19,7 @@ export const PERMISSIONS = {
     ROLES_CREATE: 'roles.create',
     ROLES_EDIT: 'roles.edit',
     ROLES_DELETE: 'roles.delete',
+    ACTIVITY_VIEW: 'activity.view',
 } as const;
 
 export type PermissionName = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -33,6 +34,7 @@ export const PERMISSION_LABELS: Record<PermissionName, string> = {
     'roles.create': 'Create Roles',
     'roles.edit': 'Edit Roles',
     'roles.delete': 'Delete Roles',
+    'activity.view': 'View Activity Log',
 };
 
 export const PERMISSION_GROUPS = {
@@ -48,6 +50,9 @@ export const PERMISSION_GROUPS = {
         'roles.create',
         'roles.edit',
         'roles.delete',
+    ],
+    Activity: [
+        'activity.view',
     ],
 } as const satisfies Record<string, readonly PermissionName[]>;
 

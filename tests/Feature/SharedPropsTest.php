@@ -68,6 +68,7 @@ test('can map degrades gracefully when permissions are not seeded', function () 
         Permission::RolesCreate->value => false,
         Permission::RolesEdit->value => false,
         Permission::RolesDelete->value => false,
+        Permission::ActivityView->value => false,
     ]);
 });
 

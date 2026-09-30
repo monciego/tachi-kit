@@ -30,7 +30,7 @@ php artisan tachi:superadmin   # create a superadmin (production has no demo acc
 
 Use npm only (`package-lock.json`); there is no pnpm lockfile.
 
-Tests run on in-memory SQLite (`phpunit.xml`); local dev uses MySQL (`.env.example`). Feature tests use `RefreshDatabase` automatically (`tests/Pest.php`).
+Tests run on in-memory SQLite (`phpunit.xml`); `.env.example` defaults to SQLite, MySQL is optional. Feature tests use `RefreshDatabase` automatically (`tests/Pest.php`).
 
 ## Architecture
 
@@ -54,6 +54,14 @@ Index actions type-hint `App\Http\Requests\DataTableRequest`, which parses the D
 
 - `DatabaseSeeder` always runs `RolePermissionSeeder`; `DemoUserSeeder` (demo accounts, password `password`) is skipped in production.
 - Avatars are stored at `users.avatar_path` on `config('tachi.avatars.disk')` (`AVATAR_DISK`). `User` appends an `avatar` URL attribute and hides the path, so the frontend uses `user.avatar` directly. Uploads go through `Settings\AvatarController`. Select `avatar_path` when narrowing user columns.
+
+### Activity log
+
+- Log with `App\Enums\ActivityEvent::X->log($subject, $properties, causer: $user)` at the point where the action happens (controllers, Fortify actions, `Listeners\LogAuthenticationActivity`). Don't use Spatie's `LogsActivity` model trait. Log only when something actually changed.
+- `log()` saves `causer_name`, `subject_name` and `ip` in `properties`, so entries stay readable after a user is renamed or deleted. `ActivityEvent::describe()` builds the display sentence on the server.
+- Adding an event: add an enum case with `label()` and a `describe()` branch, then call `log()` where the action happens.
+- `/activity` (`ActivityController`) requires `activity.view` (`ActivityPolicy`); by default only superadmins have it. Entries whose actor or subject is a superadmin are hidden from non-superadmins. `activitylog:clean` runs daily and deletes entries older than 365 days.
+- Failed logins store only the attempted email, never the credentials.
 
 ### Dashboard
 
