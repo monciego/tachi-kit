@@ -12,11 +12,13 @@ use Illuminate\Validation\Rules\Password;
 class UpdateUserRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the user is authorized to make this request. Delegates to
+     * UserPolicy::update, so any role with users.edit may edit users (the
+     * policy still protects superadmin accounts and self-demotion).
      */
     public function authorize(): bool
     {
-        return (bool) $this->user()?->hasAnyRole([RoleName::Superadmin, RoleName::Admin]);
+        return (bool) $this->user()?->can('update', [$this->route('user'), $this]);
     }
 
     /**

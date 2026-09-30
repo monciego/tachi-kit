@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\Permission;
+use App\Models\Role;
 use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Support\Facades\Auth;
@@ -727,4 +729,66 @@ test('requires at least one role when updating', function () {
             'email' => $target->email,
         ])
         ->assertSessionHasErrors('roles');
+});
+
+describe('custom roles', function () {
+    /**
+     * A user whose only role grants the given user permissions.
+     *
+     * @param  list<Permission>  $permissions
+     */
+    function userManager(array $permissions): User
+    {
+        $role = Role::query()->create(['name' => 'User Manager']);
+        $role->givePermissionTo(array_map(fn (Permission $permission) => $permission->value, $permissions));
+
+        return User::factory()->create()->assignRole($role);
+    }
+
+    test('a custom role with users.create can create users', function () {
+        $this->actingAs(userManager([Permission::UsersView, Permission::UsersCreate]))
+            ->post(route('users.store'), [
+                'name' => 'New Person',
+                'email' => 'new@example.com',
+                'password' => 'secret-password',
+                'password_confirmation' => 'secret-password',
+                'roles' => ['user'],
+            ])
+            ->assertRedirect(route('users.index'));
+
+        $this->assertDatabaseHas('users', ['email' => 'new@example.com']);
+    });
+
+    test('a custom role with users.edit can update users', function () {
+        $jane = User::factory()->asUser()->create();
+
+        $this->actingAs(userManager([Permission::UsersView, Permission::UsersEdit]))
+            ->put(route('users.update', $jane), [
+                'name' => 'Jane Smith',
+                'email' => $jane->email,
+                'roles' => ['user'],
+            ])
+            ->assertRedirect(route('users.index'));
+
+        expect($jane->fresh()->name)->toBe('Jane Smith');
+    });
+
+    test('a custom role without users.create cannot create users', function () {
+        $this->actingAs(userManager([Permission::UsersView]))
+            ->post(route('users.store'), [
+                'name' => 'New Person',
+                'email' => 'new@example.com',
+                'password' => 'secret-password',
+                'password_confirmation' => 'secret-password',
+                'roles' => ['user'],
+            ])
+            ->assertForbidden();
+    });
+});
+
+test('users and roles have no show page', function () {
+    $role = Role::query()->where('name', 'user')->sole();
+
+    $this->get('/users/'.$this->admin->id)->assertMethodNotAllowed();
+    $this->get('/roles/'.$role->id)->assertMethodNotAllowed();
 });

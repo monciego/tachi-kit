@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Concerns\PasswordValidationRules;
 use App\Enums\RoleName;
+use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -12,11 +13,12 @@ class StoreUserRequest extends FormRequest
     use PasswordValidationRules;
 
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the user is authorized to make this request. Delegates to
+     * UserPolicy::create, so any role with users.create may create users.
      */
     public function authorize(): bool
     {
-        return (bool) $this->user()?->hasAnyRole([RoleName::Superadmin, RoleName::Admin]);
+        return (bool) $this->user()?->can('create', User::class);
     }
 
     /**

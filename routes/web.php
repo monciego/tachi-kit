@@ -13,8 +13,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('users/bulk-delete', [UserController::class, 'bulkDestroy'])->name('users.bulk-delete');
     Route::patch('users/{user}/status', [UserController::class, 'updateStatus'])->name('users.update-status');
-    Route::resource('users', UserController::class);
-    Route::resource('roles', RoleController::class);
+    Route::resource('users', UserController::class)->except('show');
+    Route::resource('roles', RoleController::class)->except('show');
 
     Route::get('activity', [ActivityController::class, 'index'])->name('activity.index');
 });
