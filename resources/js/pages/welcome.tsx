@@ -11,7 +11,9 @@ import {
 import type { LucideIcon } from 'lucide-react';
 
 import AppLogoIcon from '@/components/app-logo-icon';
+import { CommandSnippet } from '@/components/command-snippet';
 import { Button } from '@/components/ui/button';
+import { DOCS_URL, INSTALLATION_DOCS_URL } from '@/constants/links';
 import { dashboard, login, register } from '@/routes';
 
 type Feature = {
@@ -59,6 +61,14 @@ const FEATURES: Feature[] = [
     },
 ];
 
+const INSTALL_COMMAND = 'laravel new my-app --using=monciego/tachi-kit';
+
+const GETTING_STARTED: { title: string; command: string }[] = [
+    { title: 'Create your app', command: INSTALL_COMMAND },
+    { title: 'Install the frontend', command: 'cd my-app && npm install' },
+    { title: 'Start the dev server', command: 'composer dev' },
+];
+
 const STACK = [
     'Laravel 13',
     'React 19',
@@ -86,6 +96,9 @@ export default function Welcome() {
                         {name}
                     </Link>
                     <nav className="flex items-center gap-2">
+                        <Button asChild variant="ghost" size="sm">
+                            <a href={DOCS_URL}>Docs</a>
+                        </Button>
                         {auth.user ? (
                             <Button asChild size="sm">
                                 <Link href={dashboard()}>Dashboard</Link>
@@ -159,15 +172,10 @@ export default function Welcome() {
                                     </>
                                 )}
                             </div>
-                            <pre className="bg-muted/50 text-muted-foreground w-full max-w-sm overflow-x-auto rounded-lg border px-4 py-3 text-left font-mono text-sm">
-                                <code>
-                                    <span className="select-none">$ </span>
-                                    composer setup
-                                    {'\n'}
-                                    <span className="select-none">$ </span>
-                                    composer dev
-                                </code>
-                            </pre>
+                            <CommandSnippet
+                                command={INSTALL_COMMAND}
+                                className="w-full max-w-lg"
+                            />
                         </div>
                     </section>
 
@@ -204,6 +212,47 @@ export default function Welcome() {
                                     ),
                                 )}
                             </ul>
+                        </div>
+                    </section>
+
+                    <section className="border-t">
+                        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2">
+                            <div className="flex flex-col gap-3">
+                                <h2 className="text-3xl font-semibold tracking-tight">
+                                    Up and running in three commands.
+                                </h2>
+                                <p className="text-muted-foreground">
+                                    SQLite, migrations, roles and permissions
+                                    are set up during install. Add demo accounts
+                                    any time with{' '}
+                                    <code className="font-mono text-sm">
+                                        php artisan db:seed
+                                    </code>
+                                    .
+                                </p>
+                                <a
+                                    href={INSTALLATION_DOCS_URL}
+                                    className="mt-2 inline-flex items-center gap-1 text-sm font-semibold hover:underline"
+                                >
+                                    Installation guide
+                                    <ArrowRight className="size-4" />
+                                </a>
+                            </div>
+                            <ol className="flex flex-col gap-4">
+                                {GETTING_STARTED.map(
+                                    ({ title, command }, index) => (
+                                        <li
+                                            key={command}
+                                            className="flex flex-col gap-1.5"
+                                        >
+                                            <span className="text-muted-foreground text-xs font-medium">
+                                                {index + 1}. {title}
+                                            </span>
+                                            <CommandSnippet command={command} />
+                                        </li>
+                                    ),
+                                )}
+                            </ol>
                         </div>
                     </section>
 

@@ -7,6 +7,7 @@ import {
     Users,
 } from 'lucide-react';
 
+import { DOCS_URL, REPOSITORY_URL } from '@/constants/links';
 import { PERMISSIONS } from '@/constants/permissions';
 import { dashboard } from '@/routes';
 import activity from '@/routes/activity';
@@ -71,13 +72,13 @@ export const FOOTER_NAV_ITEMS: NavItem[] = [
     {
         id: 'repository',
         title: 'Repository',
-        href: 'https://github.com/monciego/tachi-kit',
+        href: REPOSITORY_URL,
         icon: FolderGit2,
     },
     {
         id: 'documentation',
         title: 'Documentation',
-        href: 'https://github.com/monciego/tachi-kit',
+        href: DOCS_URL,
         icon: BookOpen,
     },
 ];

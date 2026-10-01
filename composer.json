@@ -12,6 +12,12 @@
         "shadcn"
     ],
     "license": "MIT",
+    "homepage": "https://tachi-kit-docs.vercel.app",
+    "support": {
+        "docs": "https://tachi-kit-docs.vercel.app/docs/",
+        "issues": "https://github.com/monciego/tachi-kit/issues",
+        "source": "https://github.com/monciego/tachi-kit"
+    },
     "require": {
         "php": "^8.4",
         "inertiajs/inertia-laravel": "^3.0",
@@ -98,7 +104,8 @@
             "@php artisan key:generate --ansi",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi",
-            "@php artisan db:seed --class=RolePermissionSeeder --force --ansi"
+            "@php artisan db:seed --class=RolePermissionSeeder --force --ansi",
+            "@php artisan storage:link --ansi"
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"

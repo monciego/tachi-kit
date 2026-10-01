@@ -6,6 +6,8 @@ Tachi Kit is an opinionated Laravel + React + Inertia starter kit with authentic
 
 It is built on top of the official [Laravel React starter kit](https://github.com/laravel/react-starter-kit) and keeps its conventions, so everything in the Laravel docs still applies.
 
+📖 **Documentation:** [tachi-kit-docs.vercel.app](https://tachi-kit-docs.vercel.app/docs/)
+
 ## What's included
 
 - **Authentication**: login, registration, email verification, password reset, two-factor authentication and passkeys (Laravel Fortify). Inactive accounts can't sign in.
@@ -27,26 +29,45 @@ It is built on top of the official [Laravel React starter kit](https://github.co
 
 ## Getting started
 
-Create a new app with the Laravel installer or Composer:
+**1. Create your app** with the Laravel installer:
 
 ```bash
 laravel new my-app --using=monciego/tachi-kit
-# or
+```
+
+Or with Composer:
+
+```bash
 composer create-project monciego/tachi-kit my-app
 ```
 
-This creates `.env`, a SQLite database, runs the migrations and seeds the roles and permissions. Then install the frontend and start the app:
+Either one creates `.env`, a SQLite database, runs the migrations, seeds the roles and permissions, and links storage for avatars.
+
+**2. Install the frontend:**
 
 ```bash
-cd my-app
-npm install
-php artisan storage:link
-composer dev        # start the app and Vite
+cd my-app && npm install
 ```
 
-To try it with demo accounts, run `php artisan db:seed`.
+**3. Start the dev server** (the app and Vite together):
 
-Working from a clone of this repository instead? `composer setup` installs everything, creates `.env`, migrates, links storage and builds the assets.
+```bash
+composer dev
+```
+
+Open [http://localhost:8000](http://localhost:8000). To explore with demo accounts, seed them first:
+
+```bash
+php artisan db:seed
+```
+
+Working from a clone of this repository instead? One command installs everything, creates `.env`, migrates, links storage and builds the assets:
+
+```bash
+composer setup
+```
+
+See the [installation guide](https://tachi-kit-docs.vercel.app/docs/installation/) for details.
 
 ### Using MySQL
 
