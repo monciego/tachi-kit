@@ -5,12 +5,12 @@ import {
     KeyRound,
     LayoutDashboard,
     ShieldCheck,
-    Sword,
     Users,
     Workflow,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
+import AppLogoIcon from '@/components/app-logo-icon';
 import { Button } from '@/components/ui/button';
 import { dashboard, login, register } from '@/routes';
 
@@ -81,7 +81,7 @@ export default function Welcome() {
                         className="flex items-center gap-2 font-semibold tracking-tight"
                     >
                         <span className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-md">
-                            <Sword className="size-4" aria-hidden />
+                            <AppLogoIcon className="text-[13px]" />
                         </span>
                         {name}
                     </Link>

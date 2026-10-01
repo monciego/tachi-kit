@@ -11,6 +11,10 @@
     --font-sans:
         'Geist', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
         'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    /* The 太刀 wordmark: a serif Japanese face from the visitor's system. */
+    --font-logo:
+        'Noto Serif JP', 'Noto Serif CJK JP', 'Hiragino Mincho ProN',
+        'Yu Mincho', 'YuMincho', 'MS Mincho', serif;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
